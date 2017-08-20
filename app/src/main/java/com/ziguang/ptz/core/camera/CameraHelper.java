@@ -43,6 +43,7 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraHelper {
 
+    private static final String TAG = CameraHelper.class.getSimpleName();
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -189,8 +190,11 @@ public class CameraHelper {
             mCameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId);
             //流配置
             StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            mlargest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.RAW_SENSOR)), new CompareSizesByArea());
+            // TODO: 2017/8/19 选择jpeg 从数组中选择9:16的size
+            Log.i(TAG, "yuv 444 888 " + map.getOutputSizes(ImageFormat.YUV_420_888).length);
+            mlargest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, mlargest);
+            Log.i(TAG, "choose preview size width: " + mPreviewSize.getWidth() + ", height: " + mPreviewSize.getHeight());
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }

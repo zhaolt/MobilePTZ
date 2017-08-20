@@ -31,6 +31,7 @@ public class PreviewDisplayFragment extends Fragment implements PreviewRenderer.
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = UIUtils.inflate(R.layout.fragment_camera_preview);
+        mDisplayView = (GLSurfaceView) mRootView.findViewById(R.id.preview_surface);
         // choose OpenGL ES 2.0
         mDisplayView.setEGLContextClientVersion(2);
         PreviewRenderer renderer = new PreviewRenderer();
