@@ -17,11 +17,25 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp
+             src/main/cpp/native.c
 
              src/main/cpp/config.h
 
-             src/main/cpp/jconfig.h)
+             src/main/cpp/jconfig.h
+
+             src/main/cpp/cderror.h
+
+             src/main/cpp/cdjpeg.h
+
+             src/main/cpp/jerror.h
+
+             src/main/cpp/jinclude.h
+
+             src/main/cpp/jmorecfg.h
+
+             src/main/cpp/jpeglib.h
+
+             src/main/cpp/jversion.h)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
