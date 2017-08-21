@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -28,6 +31,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 
 import com.ziguang.ptz.App;
+import com.ziguang.ptz.widget.AutoFitTextureView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,11 +164,17 @@ public class CameraHelper {
 
     }
 
-    public void openCamera2(int width, int height, Activity activity, SurfaceTexture surfaceTexture) throws CameraAccessException {
+    public void openCamera2(int width,
+                            int height,
+                            Activity activity,
+                            SurfaceTexture surfaceTexture,
+                            AutoFitTextureView textureView) throws CameraAccessException {
         initBackgroundThread();
-        setUpCameraOutputs(width, height);
+        setUpCameraOutputs(width, height, textureView);
+        configureTransform(width, height, activity, textureView);
         initOutputSurface(surfaceTexture);
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mCameraManager.openCamera(mCameraId, mCameraStateCallback, mBackgroundHandler);
@@ -184,20 +194,48 @@ public class CameraHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setUpCameraOutputs(int width, int height) {
+    private void setUpCameraOutputs(int width, int height, AutoFitTextureView textureView) {
         mCameraManager = (CameraManager) App.INSTANCE.getSystemService(Context.CAMERA_SERVICE);
         try {
             mCameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId);
             //流配置
-            StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            // TODO: 2017/8/19 选择jpeg 从数组中选择9:16的size
-            Log.i(TAG, "yuv 444 888 " + map.getOutputSizes(ImageFormat.YUV_420_888).length);
+            StreamConfigurationMap map = mCameraCharacteristics.get(
+                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             mlargest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, mlargest);
             Log.i(TAG, "choose preview size width: " + mPreviewSize.getWidth() + ", height: " + mPreviewSize.getHeight());
+            int orientation = App.INSTANCE.getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                textureView.fitWindow(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            } else {
+                textureView.fitWindow(mPreviewSize.getHeight(), mPreviewSize.getWidth());
+            }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private void configureTransform(int viewWidth, int viewHeight, Activity activity,
+                                    AutoFitTextureView textureView) {
+        if (null == textureView || null == mPreviewSize || null == activity) {
+            return;
+        }
+        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        Matrix matrix = new Matrix();
+        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
+        float centerX = viewRect.centerX();
+        float centerY = viewRect.centerY();
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max(
+                    (float) viewHeight / mPreviewSize.getHeight(),
+                    (float) viewWidth / mPreviewSize.getWidth());
+            matrix.postScale(scale, scale, centerX, centerY);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        }
+        textureView.setTransform(matrix);
     }
 
     private Size chooseOptimalSize(Size[] choices, int width, int height, Size aspectRatio) {

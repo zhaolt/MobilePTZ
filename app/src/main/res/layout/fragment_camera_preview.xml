@@ -3,8 +3,9 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <android.opengl.GLSurfaceView
+    <com.ziguang.ptz.widget.AutoFitTextureView
         android:id="@+id/preview_surface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
 </FrameLayout>

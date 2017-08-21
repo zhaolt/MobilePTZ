@@ -19,7 +19,8 @@
 
         <activity
             android:name=".ui.camera.CameraActivity"
-            android:theme="@style/AppTheme_Full_Screen">
+            android:theme="@style/AppTheme_Full_Screen"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
