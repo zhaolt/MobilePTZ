@@ -1,10 +1,10 @@
 
 {
-	"buildFiles" : [ "/Users/zhaoliangtai/MobilePTZ/app/CMakeLists.txt" ],
+	"buildFiles" : [ "/Users/zhaoliangtai/Downloads/MobilePTZ/app/CMakeLists.txt" ],
 	"cFileExtensions" : [ "c" ],
 	"cleanCommands" : 
 	[
-		"/Users/zhaoliangtai/Downloads/android-sdk-macosx/cmake/3.6.3155560/bin/cmake --build /Users/zhaoliangtai/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64 --target clean"
+		"/Users/zhaoliangtai/Downloads/android-sdk-macosx/cmake/3.6.3155560/bin/cmake --build /Users/zhaoliangtai/Downloads/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64 --target clean"
 	],
 	"libraries" : 
 	{
@@ -16,22 +16,22 @@
 			"output" : "../../../../src/main/jniLibs/armeabi-v7a/libjpeg.so",
 			"toolchain" : "18255409467292569209"
 		},
-		"native-lib-Debug-mips64" : 
+		"native-Debug-mips64" : 
 		{
 			"abi" : "mips64",
-			"artifactName" : "native-lib",
-			"buildCommand" : "/Users/zhaoliangtai/Downloads/android-sdk-macosx/cmake/3.6.3155560/bin/cmake --build /Users/zhaoliangtai/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64 --target native-lib",
+			"artifactName" : "native",
+			"buildCommand" : "/Users/zhaoliangtai/Downloads/android-sdk-macosx/cmake/3.6.3155560/bin/cmake --build /Users/zhaoliangtai/Downloads/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64 --target native",
 			"buildType" : "debug",
 			"files" : 
 			[
 				
 				{
-					"flags" : "  --target=mips64el-none-linux-android --gcc-toolchain=/Users/zhaoliangtai/Downloads/android-sdk-macosx/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/zhaoliangtai/Downloads/android-sdk-macosx/ndk-bundle/platforms/android-21/arch-mips64 -Dnative_lib_EXPORTS -I../../../../../../../../src/main/cpp  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC      -c ",
-					"src" : "/Users/zhaoliangtai/MobilePTZ/app/src/main/cpp/native.c",
-					"workingDirectory" : "/Users/zhaoliangtai/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64"
+					"flags" : "  --target=mips64el-none-linux-android --gcc-toolchain=/Users/zhaoliangtai/Downloads/android-sdk-macosx/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/zhaoliangtai/Downloads/android-sdk-macosx/ndk-bundle/platforms/android-21/arch-mips64 -Dnative_EXPORTS -I../../../../../../../../src/main/cpp  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/zhaoliangtai/Downloads/MobilePTZ/app/src/main/cpp/native.c",
+					"workingDirectory" : "/Users/zhaoliangtai/Downloads/MobilePTZ/app/.externalNativeBuild/cmake/debug/mips64"
 				}
 			],
-			"output" : "/Users/zhaoliangtai/MobilePTZ/app/build/intermediates/cmake/debug/obj/mips64/libnative-lib.so",
+			"output" : "/Users/zhaoliangtai/Downloads/MobilePTZ/app/build/intermediates/cmake/debug/obj/mips64/libnative.so",
 			"toolchain" : "18255409467292569209"
 		}
 	},

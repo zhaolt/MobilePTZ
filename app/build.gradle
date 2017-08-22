@@ -12,8 +12,13 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags ""
+                arguments "-DANDROID_TOOLCHAIN=gcc"
+                cppFlags "-frtti -fexceptions"
+                cFlags "-fopenmp"
             }
+        }
+        ndk {
+            abiFilters 'armeabi-v7a'
         }
     }
     buildTypes {

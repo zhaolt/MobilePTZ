@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -77,6 +78,11 @@ public class CameraHelper {
 
     private Size mPreviewSize;
 
+    private CaptureRequest.Builder mCaptureBuilder;
+
+    private CameraDevice mCameraDevice;
+
+    private ArrayList<Surface> mOutputSurfaces;
 
     // 回调
     private CameraCaptureSession.CaptureCallback mPreviewSessionCallback = new CameraCaptureSession.CaptureCallback() {
@@ -95,19 +101,11 @@ public class CameraHelper {
 
     private Size mlargest;
 
-    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
-            new ImageReader.OnImageAvailableListener() {
-                @Override
-                public void onImageAvailable(ImageReader reader) {
-                    // TODO: 2017/8/19 保存照片
-                }
-            };
-
-
     private final CameraDevice.StateCallback mCameraStateCallback = new CameraDevice.StateCallback() {
 
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
+            mCameraDevice = camera;
             startPreview(camera);
         }
 
@@ -153,6 +151,23 @@ public class CameraHelper {
         }
     };
 
+    private CameraCaptureSession.StateCallback mSessionCaptureStateCallback = new CameraCaptureSession.StateCallback() {
+        @Override
+        public void onConfigured(@NonNull CameraCaptureSession session) {
+            try {
+                session.setRepeatingBurst(Arrays.asList(mCaptureBuilder.build()),
+                        new JpegSessionCallback(mBackgroundHandler, mMediaActionSound), mBackgroundHandler);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+        }
+    };
+
     private CameraHelper() {
     }
 
@@ -160,19 +175,14 @@ public class CameraHelper {
         return SingleTon.INSTANCE;
     }
 
-    public void openCamera1() {
-
-    }
-
-    public void openCamera2(int width,
-                            int height,
-                            Activity activity,
-                            SurfaceTexture surfaceTexture,
-                            AutoFitTextureView textureView) throws CameraAccessException {
+    public void openCamera(int width,
+                           int height,
+                           Activity activity,
+                           AutoFitTextureView textureView) throws CameraAccessException {
         initBackgroundThread();
         setUpCameraOutputs(width, height, textureView);
         configureTransform(width, height, activity, textureView);
-        initOutputSurface(surfaceTexture);
+        initOutputSurface(textureView.getSurfaceTexture());
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) !=
                 PackageManager.PERMISSION_GRANTED) {
             return;
@@ -187,10 +197,13 @@ public class CameraHelper {
     }
 
     private void initOutputSurface(SurfaceTexture surfaceTexture) {
-        mImageReader = ImageReader.newInstance(mlargest.getWidth(), mlargest.getHeight(), ImageFormat.JPEG, 2);
-        mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+        mImageReader = ImageReader.newInstance(mlargest.getWidth(), mlargest.getHeight(), ImageFormat.YUV_420_888, 2);
+        mImageReader.setOnImageAvailableListener(new JpegReaderListener(), mBackgroundHandler);
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         mSurface = new Surface(surfaceTexture);
+        mOutputSurfaces = new ArrayList<>();
+        mOutputSurfaces.add(mImageReader.getSurface());
+        mOutputSurfaces.add(mSurface);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -202,6 +215,7 @@ public class CameraHelper {
             StreamConfigurationMap map = mCameraCharacteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             mlargest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
+            Log.i(TAG, "largets width: " + mlargest.getWidth() + ", largets height: " + mlargest.getHeight());
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, mlargest);
             Log.i(TAG, "choose preview size width: " + mPreviewSize.getWidth() + ", height: " + mPreviewSize.getHeight());
             int orientation = App.INSTANCE.getResources().getConfiguration().orientation;
@@ -262,6 +276,24 @@ public class CameraHelper {
     public void initShutter() {
         mMediaActionSound = new MediaActionSound();
         mMediaActionSound.load(MediaActionSound.SHUTTER_CLICK);
+    }
+
+    public void takePicture(int rotation) throws CameraAccessException {
+        mCaptureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG);
+        mCaptureBuilder.addTarget(mImageReader.getSurface());
+        mCaptureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        Range<Integer> fps[] = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        mCaptureBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, fps[fps.length - 1]);
+        mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+        mCameraDevice.createCaptureSession(mOutputSurfaces, mSessionCaptureStateCallback, mBackgroundHandler);
+    }
+
+    public void continuePreview() {
+        try {
+            mCameraDevice.createCaptureSession(Arrays.asList(mSurface), mCameraCaptureSessionStateCallback, mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
 

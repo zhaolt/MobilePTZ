@@ -54,8 +54,8 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
-                CameraHelper.getInstance().openCamera2(mDisplayView.getWidth(),
-                        mDisplayView.getHeight(), getActivity(), surface, mDisplayView);
+                CameraHelper.getInstance().openCamera(mDisplayView.getWidth(),
+                        mDisplayView.getHeight(), getActivity(), mDisplayView);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }

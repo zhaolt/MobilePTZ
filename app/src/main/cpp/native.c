@@ -1,12 +1,13 @@
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "jpeg/jpeglib.h"
+#import <omp.h>
 
 #ifdef ANDROID
 
 #include <jni.h>
 #include <android/log.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "jpeglib.h"
 
 #define LOGE(format, ...)  __android_log_print(ANDROID_LOG_ERROR, "(>_<)", format, ##__VA_ARGS__)
 #define LOGI(format, ...)  __android_log_print(ANDROID_LOG_INFO,  "(^_^)", format, ##__VA_ARGS__)
@@ -18,27 +19,51 @@
 int write_JPEG_file(const char *filename, unsigned char *yData, unsigned char *uData,
                     unsigned char *vData, int quality, int image_width, int image_height);
 
-static jclass g_cls_FFmpegInterface = NULL;
-
-
-
-void writeJpegFile(JNIEnv* env, jobject jobj, jstring fileName, jbyteArray yDataArr,
-                   jbyteArray uDataArr, jbyteArray vDataArr, jint quality, jint width, jint height) {
-    char filename[500] = {0};
+void Java_com_ziguang_ptz_core_jpeglib_JpegNativeInterface_writeJpegFile(JNIEnv *env, jobject jobj,
+                                                                         jstring fileName,
+                                                                         jobject yBuffer,
+                                                                         jint yLen,
+                                                                         jobject cbBuffer,
+                                                                         jint cbLen,
+                                                                         jobject crBuffer,
+                                                                         jint uvStride,
+                                                                         jint quality,
+                                                                         jint width, jint height) {
+    char *filename[500] = {0};
     sprintf(filename, "%s", (*env)->GetStringUTFChars(env, fileName, NULL));
-    jbyte* yData = (*env)->GetByteArrayElements(env, yDataArr, 0);
-    jbyte* uData = (*env)->GetByteArrayElements(env, uDataArr, 0);
-    jbyte* vData = (*env)->GetByteArrayElements(env, vDataArr, 0);
-    int ret = write_JPEG_file(filename, yData, uData, vData, quality, width, height);
-    if (ret == -1) {
-        LOGE("error: open file failed.");
+    jbyte *y = (*env)->GetDirectBufferAddress(env, yBuffer);
+    jbyte *cb = (*env)->GetDirectBufferAddress(env, cbBuffer);
+    jbyte *cr = (*env)->GetDirectBufferAddress(env, crBuffer);
+    uint8_t *uData = malloc(cbLen);
+    uint8_t *vData = malloc(cbLen);
+    int j, k;
+
+    int uLimit = 0;
+    int vLimit = 0;
+    if (uvStride == 2) { // yuv420 sp uv交错
+#pragma omp parallel for num_threads(4)
+        for (j = 0; j < cbLen; j++) {
+            if (j % 2 == 0) {
+                uData[uLimit++] = cb[j];
+            } else {
+                vData[vLimit++] = cb[j];
+            }
+        }
+#pragma omp parallel for num_threads(4)
+        for (k = 0; k < cbLen; k++) {
+            if (k % 2 == 0) {
+                uData[uLimit++] = cr[k];
+            } else {
+                vData[vLimit++] = cr[k];
+            }
+        }
+        write_JPEG_file(filename, y, uData, vData, quality, width, height);
+    } else {    // yuv420p
+        write_JPEG_file(filename, y, cb, cr, quality, width, height);
     }
-    (*env)->ReleaseByteArrayElements(env, yDataArr, yData, 0);
-    (*env)->ReleaseByteArrayElements(env, uDataArr, uData, 0);
-    (*env)->ReleaseByteArrayElements(env, vDataArr, vData, 0);
-    (*env)->DeleteLocalRef(env, yData);
-    (*env)->DeleteLocalRef(env, uData);
-    (*env)->DeleteLocalRef(env, vData);
+
+    free(uData);
+    free(vData);
 }
 
 int write_JPEG_file(const char *filename, unsigned char *yData, unsigned char *uData,
@@ -112,36 +137,4 @@ int write_JPEG_file(const char *filename, unsigned char *yData, unsigned char *u
     fclose(outfile);
     jpeg_destroy_compress(&cinfo);
     return 0;
-}
-
-
-const JNINativeMethod g_methods[] = {
-        "writeJpegFile", "(Ljava/lang/String;[B[B[BIII)V", (void*) writeJpegFile
-};
-
-jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env = NULL;
-    jclass cls = NULL;
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-    cls = (*env)->FindClass(env, "com/ziguang/ptz/core/jpeglib/JpegNativeInterface");
-    // 创建全局弱引用
-    g_cls_FFmpegInterface = (*env)->NewWeakGlobalRef(env, cls);
-    // 删除本地引用
-    (*env)->DeleteLocalRef(env, cls);
-    // 绑定Java函数
-    (*env)->RegisterNatives(env, g_cls_FFmpegInterface, g_methods, sizeof(g_methods) / sizeof(g_methods[0]));
-    return JNI_VERSION_1_6;
-}
-
-void JNI_OnUnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env = NULL;
-    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return;
-    }
-    // 反注册java函数
-    (*env)->UnregisterNatives(env, g_cls_FFmpegInterface);
-    // 删除全局弱引用
-    (*env)->DeleteWeakGlobalRef(env, g_cls_FFmpegInterface);
 }

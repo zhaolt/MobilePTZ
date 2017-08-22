@@ -1,5 +1,7 @@
 package com.ziguang.ptz.core.jpeglib;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by zhaoliangtai on 2017/8/21.
  */
@@ -7,10 +9,23 @@ package com.ziguang.ptz.core.jpeglib;
 public class JpegNativeInterface {
 
     static {
-        System.loadLibrary("libnative");
-        System.loadLibrary("libjpeg");
+        System.loadLibrary("native");
+        System.loadLibrary("jpeg");
     }
 
-    public static native void writeJpegFile(String fileName, byte[] yData, byte[] uData,
-                                            byte[] vData, int quality, int width, int height);
+    private static class SingleTon {
+        private static final JpegNativeInterface INSTANCE = new JpegNativeInterface();
+    }
+
+    private JpegNativeInterface() {}
+
+    public static JpegNativeInterface getInstance() {
+        return SingleTon.INSTANCE;
+    }
+
+    public native void writeJpegFile(String fileName,
+                                     ByteBuffer y, int yLen,
+                                     ByteBuffer cb, int cbLen,
+                                     ByteBuffer cr, int uvStride,
+                                     int quality, int width, int height);
 }
