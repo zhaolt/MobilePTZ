@@ -1,11 +1,7 @@
 package com.ziguang.ptz.ui.camera;
 
-import android.hardware.camera2.CameraAccessException;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -29,24 +25,10 @@ public class CameraActivity extends FullScreenActivity {
         PreviewDisplayFragment fragment = new PreviewDisplayFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.layout_fragment, fragment).commit();
         mCameraSetting = (ImageButton) findViewById(R.id.iv_camera_setting);
-        mCameraSetting.setOnTouchListener(new View.OnTouchListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        mCameraSetting.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-                        try {
-                            CameraHelper.getInstance().takePicture(rotation);
-                        } catch (CameraAccessException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        CameraHelper.getInstance().continuePreview();
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
             }
         });
     }

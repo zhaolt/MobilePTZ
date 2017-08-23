@@ -1,4 +1,4 @@
-package com.ziguang.ptz.core.camera;
+package com.ziguang.ptz.core.camera2;
 
 import android.media.Image;
 import android.media.ImageReader;
@@ -22,7 +22,7 @@ import static android.content.ContentValues.TAG;
  * Created by zhaoliangtai on 2017/8/22.
  */
 
-public class JpegReaderListener implements ImageReader.OnImageAvailableListener {
+public class Yuv2JpegReaderListener implements ImageReader.OnImageAvailableListener {
 
 
     @Override

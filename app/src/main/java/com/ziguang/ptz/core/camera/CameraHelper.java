@@ -1,54 +1,28 @@
 package com.ziguang.ptz.core.camera;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.RectF;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ImageReader;
-import android.media.MediaActionSound;
-import android.os.Build;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
+import android.hardware.Camera;
 import android.util.Log;
-import android.util.Range;
-import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
-import com.ziguang.ptz.App;
-import com.ziguang.ptz.widget.AutoFitTextureView;
+import com.ziguang.ptz.utils.FileUtils;
+import com.ziguang.ptz.utils.ImageUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- * Created by zhaoliangtai on 2017/8/18.
+ * Created by zhaoliangtai on 2017/8/23.
  */
 
-
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraHelper {
-
-    private static final String TAG = CameraHelper.class.getSimpleName();
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -59,253 +33,185 @@ public class CameraHelper {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    private static class SingleTon {
-        public static final CameraHelper INSTANCE = new CameraHelper();
-    }
+    private static final String TAG = CameraHelper.class.getSimpleName();
 
-    private ImageReader mImageReader;
+    private Camera mCamera;
 
-    private CaptureRequest.Builder mPreviewBuilder;
+    private Camera.Parameters mParameters;
 
+    private boolean isPreview = false;
 
-    private HandlerThread mBackgroundThread;
+    private int mRotation = -1;
 
-    private Handler mBackgroundHandler;
-
-    private String mCameraId = "0";
-
-    private CameraCharacteristics mCameraCharacteristics;
-
-    private Size mPreviewSize;
-
-    private CaptureRequest.Builder mCaptureBuilder;
-
-    private CameraDevice mCameraDevice;
-
-    private ArrayList<Surface> mOutputSurfaces;
-
-    // 回调
-    private CameraCaptureSession.CaptureCallback mPreviewSessionCallback = new CameraCaptureSession.CaptureCallback() {
+    private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
-        public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, long timestamp, long frameNumber) {
-            super.onCaptureStarted(session, request, timestamp, frameNumber);
-        }
-    };
-
-    private Surface mSurface;
-
-    // 拍录音效
-    private MediaActionSound mMediaActionSound;
-
-    private CameraManager mCameraManager;
-
-    private Size mlargest;
-
-    private final CameraDevice.StateCallback mCameraStateCallback = new CameraDevice.StateCallback() {
-
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            mCameraDevice = camera;
-            startPreview(camera);
-        }
-
-        @Override
-        public void onDisconnected(@NonNull CameraDevice camera) {
-
-        }
-
-        @Override
-        public void onError(@NonNull CameraDevice camera, int error) {
+        public void onShutter() {
 
         }
     };
 
-    private void startPreview(CameraDevice cameraDevice) {
-        try {
-            mPreviewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreviewBuilder.addTarget(mSurface);
-            mPreviewBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            //3A
-            mPreviewBuilder.set(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_AUTO);
-            mPreviewBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
-            mPreviewBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CameraMetadata.CONTROL_AWB_MODE_AUTO);
-            cameraDevice.createCaptureSession(Arrays.asList(mSurface), mCameraCaptureSessionStateCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private CameraCaptureSession.StateCallback mCameraCaptureSessionStateCallback = new CameraCaptureSession.StateCallback() {
+    private Camera.PictureCallback mJpegPictureCallback = new Camera.PictureCallback() {
         @Override
-        public void onConfigured(@NonNull CameraCaptureSession session) {
-            try {
-                session.setRepeatingRequest(mPreviewBuilder.build(), mPreviewSessionCallback, mBackgroundHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Bitmap b = null;
+            if(null != data){
+                b = BitmapFactory.decodeByteArray(data, 0, data.length);//data是字节数据，将其解析成位图
+                mCamera.stopPreview();
+                isPreview = false;
             }
-        }
-
-        @Override
-        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-
-        }
-    };
-
-    private CameraCaptureSession.StateCallback mSessionCaptureStateCallback = new CameraCaptureSession.StateCallback() {
-        @Override
-        public void onConfigured(@NonNull CameraCaptureSession session) {
-            try {
-                session.setRepeatingBurst(Arrays.asList(mCaptureBuilder.build()),
-                        new JpegSessionCallback(mBackgroundHandler, mMediaActionSound), mBackgroundHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
+            //保存图片到sdcard
+            if(null != b) {
+                Bitmap rotaBitmap = ImageUtils.getRotateBitmap(b, ORIENTATIONS.get(mRotation));
+                FileUtils.checkJpegDir();
+                File file = FileUtils.createJpeg();
+                FileUtils.saveBitmap(file, rotaBitmap);
             }
-        }
-
-        @Override
-        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-
+            //再次进入预览
+            mCamera.startPreview();
+            isPreview = true;
         }
     };
+
+    private CameraSizeComparator sizeComparator = new CameraSizeComparator();
 
     private CameraHelper() {
+    }
+
+    private static class SingleTon {
+        public static final CameraHelper INSTANCE = new CameraHelper();
     }
 
     public static CameraHelper getInstance() {
         return SingleTon.INSTANCE;
     }
 
-    public void openCamera(int width,
-                           int height,
-                           Activity activity,
-                           AutoFitTextureView textureView) throws CameraAccessException {
-        initBackgroundThread();
-        setUpCameraOutputs(width, height, textureView);
-        configureTransform(width, height, activity, textureView);
-        initOutputSurface(textureView.getSurfaceTexture());
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
+    public void openCamera(float previewRate, SurfaceTexture surfaceTexture, int rotation) {
+        mCamera = Camera.open();
+        if (isPreview) {
+            mCamera.stopPreview();
         }
-        mCameraManager.openCamera(mCameraId, mCameraStateCallback, mBackgroundHandler);
-    }
+        mParameters = mCamera.getParameters();
+        mParameters.setPictureFormat(PixelFormat.JPEG);
+        printSupportPreviewSize(mParameters);
+        printSupportPictureSize(mParameters);
+        printSupportFocusMode(mParameters);
 
-    private void initBackgroundThread() {
-        mBackgroundThread = new HandlerThread("Android_Lollipop_Camera2");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-
-    private void initOutputSurface(SurfaceTexture surfaceTexture) {
-        mImageReader = ImageReader.newInstance(mlargest.getWidth(), mlargest.getHeight(), ImageFormat.YUV_420_888, 2);
-        mImageReader.setOnImageAvailableListener(new JpegReaderListener(), mBackgroundHandler);
-        surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        mSurface = new Surface(surfaceTexture);
-        mOutputSurfaces = new ArrayList<>();
-        mOutputSurfaces.add(mImageReader.getSurface());
-        mOutputSurfaces.add(mSurface);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setUpCameraOutputs(int width, int height, AutoFitTextureView textureView) {
-        mCameraManager = (CameraManager) App.INSTANCE.getSystemService(Context.CAMERA_SERVICE);
-        try {
-            mCameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId);
-            //流配置
-            StreamConfigurationMap map = mCameraCharacteristics.get(
-                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            mlargest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
-            Log.i(TAG, "largets width: " + mlargest.getWidth() + ", largets height: " + mlargest.getHeight());
-            mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, mlargest);
-            Log.i(TAG, "choose preview size width: " + mPreviewSize.getWidth() + ", height: " + mPreviewSize.getHeight());
-            int orientation = App.INSTANCE.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                textureView.fitWindow(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-            } else {
-                textureView.fitWindow(mPreviewSize.getHeight(), mPreviewSize.getWidth());
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void configureTransform(int viewWidth, int viewHeight, Activity activity,
-                                    AutoFitTextureView textureView) {
-        if (null == textureView || null == mPreviewSize || null == activity) {
-            return;
-        }
-        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        Matrix matrix = new Matrix();
-        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
-        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
-        float centerX = viewRect.centerX();
-        float centerY = viewRect.centerY();
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
-            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-            float scale = Math.max(
-                    (float) viewHeight / mPreviewSize.getHeight(),
-                    (float) viewWidth / mPreviewSize.getWidth());
-            matrix.postScale(scale, scale, centerX, centerY);
-            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
-        }
-        textureView.setTransform(matrix);
-    }
-
-    private Size chooseOptimalSize(Size[] choices, int width, int height, Size aspectRatio) {
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        List<Size> bigEnough = new ArrayList<Size>();
-        int w = aspectRatio.getWidth();
-        int h = aspectRatio.getHeight();
-        for (Size option : choices) {
-            if (option.getHeight() == option.getWidth() * h / w &&
-                    option.getWidth() >= width && option.getHeight() >= height) {
-                bigEnough.add(option);
-            }
-        }
-
-        // Pick the smallest of those, assuming we found any
-        if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new CompareSizesByArea());
+        Camera.Size pictureSize = getPropPictureSize(mParameters.getSupportedPictureSizes(),
+                previewRate, 800);
+        mParameters.setPictureSize(pictureSize.width, pictureSize.height);
+        Camera.Size previewSize = getPropPreviewSize(mParameters.getSupportedPreviewSizes(),
+                previewRate, 800);
+        mParameters.setPreviewSize(previewSize.width, previewSize.height);
+        mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
+        mRotation = rotation;
+        List<String> focusModes = mParameters.getSupportedFocusModes();
+        if (focusModes.contains("continuous-video")) {
+            mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
         } else {
-            Log.e("nonono", "Couldn't find any suitable preview size");
-            return choices[0];
+            mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         }
-    }
-
-    public void initShutter() {
-        mMediaActionSound = new MediaActionSound();
-        mMediaActionSound.load(MediaActionSound.SHUTTER_CLICK);
-    }
-
-    public void takePicture(int rotation) throws CameraAccessException {
-        mCaptureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG);
-        mCaptureBuilder.addTarget(mImageReader.getSurface());
-        mCaptureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-        Range<Integer> fps[] = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
-        mCaptureBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, fps[fps.length - 1]);
-        mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-        mCameraDevice.createCaptureSession(mOutputSurfaces, mSessionCaptureStateCallback, mBackgroundHandler);
-    }
-
-    public void continuePreview() {
         try {
-            mCameraDevice.createCaptureSession(Arrays.asList(mSurface), mCameraCaptureSessionStateCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
+            mCamera.setPreviewTexture(surfaceTexture);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        mCamera.startPreview();
+        isPreview = true;
+        mParameters = mCamera.getParameters();
     }
 
-
-    static class CompareSizesByArea implements Comparator<Size> {
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public int compare(Size lhs, Size rhs) {
-            // We cast here to ensure the multiplications won't overflow
-            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
-                    (long) rhs.getWidth() * rhs.getHeight());
+    public void closeCamera() {
+        if (null != mCamera) {
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            isPreview = false;
+            mCamera.release();
+            mCamera = null;
         }
-
     }
+
+    public void takePicture(int rotation) {
+        mRotation = rotation;
+        mCamera.takePicture(mShutterCallback, null, mJpegPictureCallback);
+    }
+
+    private void printSupportPreviewSize(Camera.Parameters params) {
+        List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
+        for (int i = 0; i < previewSizes.size(); i++) {
+            Camera.Size size = previewSizes.get(i);
+            Log.i(TAG, "previewSizes:width = " + size.width + " height = " + size.height);
+        }
+    }
+
+    private void printSupportPictureSize(Camera.Parameters params) {
+        List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
+        for (int i = 0; i < pictureSizes.size(); i++) {
+            Camera.Size size = pictureSizes.get(i);
+            Log.i(TAG, "pictureSizes:width = " + size.width
+                    + " height = " + size.height);
+        }
+    }
+
+    private void printSupportFocusMode(Camera.Parameters params) {
+        List<String> focusModes = params.getSupportedFocusModes();
+        for (String mode : focusModes) {
+            Log.i(TAG, "focusModes--" + mode);
+        }
+    }
+
+    private boolean equalRate(Camera.Size s, float rate) {
+        float r = (float) (s.width) / (float) (s.height);
+        if (Math.abs(r - rate) <= 0.03) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
+        Collections.sort(list, sizeComparator);
+
+        int i = 0;
+        for(Camera.Size s:list){
+            if((s.width >= minWidth) && equalRate(s, th)){
+                Log.i(TAG, "PreviewSize:w = " + s.width + "h = " + s.height);
+                break;
+            }
+            i++;
+        }
+        if(i == list.size()){
+            i = 0;//如果没找到，就选最小的size
+        }
+        return list.get(i);
+    }
+
+    private Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth) {
+        Collections.sort(list, sizeComparator);
+        int i = 0;
+        for (Camera.Size s : list) {
+            if ((s.width >= minWidth) && equalRate(s, th)) {
+                Log.i(TAG, "PictureSize : w = " + s.width + "h = " + s.height);
+                break;
+            }
+            i++;
+        }
+        if (i == list.size()) {
+            i = 0;//如果没找到，就选最小的size
+        }
+        return list.get(i);
+    }
+
+    public class CameraSizeComparator implements Comparator<Camera.Size> {
+        public int compare(Camera.Size lhs, Camera.Size rhs) {
+            if (lhs.width == rhs.width) {
+                return 0;
+            } else if (lhs.width > rhs.width) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+
 }

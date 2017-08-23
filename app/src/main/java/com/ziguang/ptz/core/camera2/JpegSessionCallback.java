@@ -1,4 +1,4 @@
-package com.ziguang.ptz.core.camera;
+package com.ziguang.ptz.core.camera2;
 
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraMetadata;

@@ -1,7 +1,6 @@
 package com.ziguang.ptz.ui.camera;
 
 import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ziguang.ptz.R;
+import com.ziguang.ptz.core.camera2.Camera2Helper;
 import com.ziguang.ptz.core.camera.CameraHelper;
 import com.ziguang.ptz.utils.UIUtils;
 import com.ziguang.ptz.widget.AutoFitTextureView;
@@ -33,7 +33,7 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
         mDisplayView = (AutoFitTextureView) mRootView.findViewById(R.id.preview_surface);
         mDisplayView.setSurfaceTextureListener(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CameraHelper.getInstance().initShutter();
+            Camera2Helper.getInstance().initShutter();
         }
         return mRootView;
     }
@@ -52,14 +52,16 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                CameraHelper.getInstance().openCamera(mDisplayView.getWidth(),
-                        mDisplayView.getHeight(), getActivity(), mDisplayView);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            try {
+//                Camera2Helper.getInstance().openCamera(mDisplayView.getWidth(),
+//                        mDisplayView.getHeight(), getActivity(), mDisplayView);
+//            } catch (CameraAccessException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
+        CameraHelper.getInstance().openCamera(UIUtils.getScreenRate(getActivity()), surface, rotation);
     }
 
     @Override

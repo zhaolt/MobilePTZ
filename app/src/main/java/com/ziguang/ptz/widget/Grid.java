@@ -9,7 +9,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.ziguang.ptz.utils.DimensionUtils;
+import com.ziguang.ptz.utils.UIUtils;
 
 public class Grid extends View {
     private Paint paint;
@@ -48,8 +48,8 @@ public class Grid extends View {
      */
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.TRANSPARENT);
-        int systemScreenWidth = DimensionUtils.getSystemScreenWidth();
-        int systemScreenHeight = DimensionUtils.getSystemScreenHeight();
+        int systemScreenWidth = UIUtils.getScreenMetrics(getContext()).x;
+        int systemScreenHeight = UIUtils.getScreenMetrics(getContext()).y;
 
         for (int i = 0; i < 2; i++) {
             canvas.drawLine(0, (i + 1) * systemScreenHeight / 3 - lineWidth / 2, systemScreenWidth, (i + 1) * systemScreenHeight / 3 + lineWidth / 2, paint);
