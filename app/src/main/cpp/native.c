@@ -98,7 +98,7 @@ int write_JPEG_file(const char *filename, unsigned char *yData, unsigned char *u
 
     buffer = (JSAMPIMAGE) (*cinfo.mem->alloc_small)((j_common_ptr) &cinfo,
                                                     JPOOL_IMAGE, 3 * sizeof(JSAMPARRAY));
-
+#pragma omp parallel for num_threads(4)
     for (band = 0; band < 3; band++) {
         buf_width[band] = cinfo.comp_info[band].width_in_blocks * DCTSIZE;
         buf_height[band] = cinfo.comp_info[band].v_samp_factor * DCTSIZE;
@@ -111,20 +111,23 @@ int write_JPEG_file(const char *filename, unsigned char *yData, unsigned char *u
     rawData[2] = vData;
 
     int src_width[3], src_height[3];
+#pragma omp parallel for num_threads(4)
     for (i = 0; i < 3; i++) {
         src_width[i] = (i == 0) ? image_width : image_width / 2;
         src_height[i] = (i == 0) ? image_height : image_height / 2;
     }
     int max_line = cinfo.max_v_samp_factor * DCTSIZE;
     int counter;
+#pragma omp parallel for num_threads(4)
     for (counter = 0; cinfo.next_scanline < cinfo.image_height; counter++) {
         //buffer image copy.
+#pragma omp parallel for num_threads(4)
         for (band = 0; band < 3; band++) {  //每个分量分别处理
             int mem_size = src_width[band];//buf_width[band];
             pDst = (unsigned char *) buffer[band][0];
             pSrc = (unsigned char *) rawData[band] + counter * buf_height[band] *
                                                      src_width[band];//buf_width[band];  //yuv.data[band]分别表示YUV起始地址
-
+#pragma omp parallel for num_threads(4)
             for (i = 0; i < buf_height[band]; i++) { //处理每行数据
                 memcpy(pDst, pSrc, mem_size);
                 pSrc += src_width[band];//buf_width[band];
