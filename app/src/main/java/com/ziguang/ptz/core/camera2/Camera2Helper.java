@@ -211,6 +211,21 @@ public class Camera2Helper {
         mCameraManager = (CameraManager) App.INSTANCE.getSystemService(Context.CAMERA_SERVICE);
         try {
             mCameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId);
+            Integer hardwareLevel = mCameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+            switch (hardwareLevel) {
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
+                    Log.i(TAG, "INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
+                    Log.i(TAG, "INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
+                    Log.i(TAG, "INFO_SUPPORTED_HARDWARE_LEVEL_FULL");
+                    break;
+                case CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3:
+                    Log.i(TAG, "INFO_SUPPORTED_HARDWARE_LEVEL_3");
+                    break;
+            }
             //流配置
             StreamConfigurationMap map = mCameraCharacteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);

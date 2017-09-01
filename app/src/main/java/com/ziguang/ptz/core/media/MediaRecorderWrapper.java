@@ -4,6 +4,7 @@ import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class MediaRecorderWrapper {
 
     public static MediaRecorderWrapper setUpMediaRecord(Camera camera, int videoWidth,
                                                         int videoHeight, int fps, int bitRate,
-                                                        int rotation) {
+                                                        int rotation, Surface displaySurface) {
         MediaRecorderWrapper result = null;
         MediaRecorder mediaRecorder = new MediaRecorder();
         if (camera == null) {
@@ -36,17 +37,19 @@ public class MediaRecorderWrapper {
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         } else {
             isLollipop = false;
-            mediaRecorder.setCamera(camera);
+//            mediaRecorder.setCamera(camera);
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         }
+        Log.i(TAG, "video width: " + videoWidth + ", height: " + videoHeight);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setVideoEncodingBitRate(bitRate);
-        mediaRecorder.setVideoFrameRate(fps);
-        mediaRecorder.setVideoSize(videoWidth, videoHeight);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mediaRecorder.setOrientationHint(rotation);
+        mediaRecorder.setVideoFrameRate(fps);
+        mediaRecorder.setVideoEncodingBitRate(bitRate);
+        mediaRecorder.setVideoSize(videoWidth, videoHeight);
+//        mediaRecorder.setOrientationHint(rotation);
+        mediaRecorder.setPreviewDisplay(displaySurface);
         result = new MediaRecorderWrapper(mediaRecorder);
         return result;
     }

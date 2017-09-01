@@ -22,13 +22,14 @@ public class CameraActivity extends FullScreenActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        PreviewDisplayFragment fragment = new PreviewDisplayFragment();
+        final PreviewDisplayFragment fragment = new PreviewDisplayFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.layout_fragment, fragment).commit();
         mCameraSetting = (ImageButton) findViewById(R.id.iv_camera_setting);
         mCameraSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
+//                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
+                CameraHelper.getInstance().startRecordingVideo(fragment.getSurface());
             }
         });
     }

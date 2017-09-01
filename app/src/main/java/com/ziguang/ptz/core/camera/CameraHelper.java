@@ -5,10 +5,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
+import com.ziguang.ptz.core.media.MediaRecorderWrapper;
 import com.ziguang.ptz.utils.FileUtils;
 import com.ziguang.ptz.utils.ImageUtils;
 
@@ -38,6 +41,8 @@ public class CameraHelper {
     private Camera mCamera;
 
     private Camera.Parameters mParameters;
+
+    private Camera.Size mVideoSize;
 
     private boolean isPreview = false;
 
@@ -89,16 +94,19 @@ public class CameraHelper {
         mCamera = Camera.open();
         if (isPreview) {
             mCamera.stopPreview();
+            isPreview = false;
         }
         mParameters = mCamera.getParameters();
         mParameters.setPictureFormat(PixelFormat.JPEG);
         printSupportPreviewSize(mParameters);
         printSupportPictureSize(mParameters);
+        printSupportVideoSize(mParameters);
         printSupportFocusMode(mParameters);
-
         Camera.Size pictureSize = getPropPictureSize(mParameters.getSupportedPictureSizes(),
                 previewRate, 800);
         mParameters.setPictureSize(pictureSize.width, pictureSize.height);
+        mVideoSize = getPropVideoSize(mParameters.getSupportedVideoSizes(),
+                previewRate, 800);
         Camera.Size previewSize = getPropPreviewSize(mParameters.getSupportedPreviewSizes(),
                 previewRate, 800);
         mParameters.setPreviewSize(previewSize.width, previewSize.height);
@@ -107,6 +115,8 @@ public class CameraHelper {
         List<String> focusModes = mParameters.getSupportedFocusModes();
         if (focusModes.contains("continuous-video")) {
             mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+        } else if (focusModes.contains("continuous-picture")){
+            mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         } else {
             mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         }
@@ -118,6 +128,11 @@ public class CameraHelper {
         mCamera.startPreview();
         isPreview = true;
         mParameters = mCamera.getParameters();
+        mCamera.cancelAutoFocus();
+    }
+
+    public void setAutoFocus(Camera.AutoFocusCallback callback) {
+        mCamera.autoFocus(callback);
     }
 
     public void closeCamera() {
@@ -128,6 +143,20 @@ public class CameraHelper {
             mCamera.release();
             mCamera = null;
         }
+    }
+
+    public void startRecordingVideo(Surface surface) {
+        mCamera.stopPreview();
+        final MediaRecorderWrapper recorderWrapper = MediaRecorderWrapper.setUpMediaRecord(mCamera,
+                1920, 1080, 30, 17 * 1024, ORIENTATIONS.get(mRotation), surface);
+        recorderWrapper.startRecordingVideo(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "abs.mp4");
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recorderWrapper.stopRecordingVideo();
+                mCamera.startPreview();
+            }
+        }, 10 * 1000);
     }
 
     public void takePicture(int rotation) {
@@ -149,6 +178,14 @@ public class CameraHelper {
             Camera.Size size = pictureSizes.get(i);
             Log.i(TAG, "pictureSizes:width = " + size.width
                     + " height = " + size.height);
+        }
+    }
+
+    private void printSupportVideoSize(Camera.Parameters params) {
+        List<Camera.Size> videoSize = params.getSupportedVideoSizes();
+        for (int i = 0; i < videoSize.size(); i++) {
+            Camera.Size size = videoSize.get(i);
+            Log.i(TAG, "videoSize:width = " + size.width + " height = " + size.height);
         }
     }
 
@@ -197,6 +234,22 @@ public class CameraHelper {
         }
         if (i == list.size()) {
             i = 0;//如果没找到，就选最小的size
+        }
+        return list.get(i);
+    }
+
+    private Camera.Size getPropVideoSize(List<Camera.Size> list, float th, int minWidth) {
+        Collections.sort(list, sizeComparator);
+        int i = 0;
+        for (Camera.Size s : list) {
+            if ((s.width >= minWidth) && equalRate(s, th)) {
+                Log.i(TAG, "VideoSize : w = " + s.width + " h = " + s.height);
+                break;
+            }
+            i++;
+        }
+        if (i == list.size()) {
+            i = 0;
         }
         return list.get(i);
     }

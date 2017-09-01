@@ -6,13 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ziguang.ptz.R;
-import com.ziguang.ptz.core.camera2.Camera2Helper;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.core.camera2.Camera2Helper;
 import com.ziguang.ptz.utils.UIUtils;
 import com.ziguang.ptz.widget.AutoFitTextureView;
 
@@ -38,17 +39,6 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
         return mRootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // TODO: 2017/8/19 GLSurfaceView onResume
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // TODO: 2017/8/19 GLSurfaceView onPause disconnect camera device
-    }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
@@ -64,6 +54,10 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
         CameraHelper.getInstance().openCamera(UIUtils.getScreenRate(getActivity()), surface, rotation);
     }
 
+    public Surface getSurface() {
+        return new Surface(mDisplayView.getSurfaceTexture());
+    }
+
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
@@ -71,6 +65,7 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        CameraHelper.getInstance().closeCamera();
         return false;
     }
 
