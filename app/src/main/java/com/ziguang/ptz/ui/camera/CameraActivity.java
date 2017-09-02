@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.utils.UIUtils;
 
 /**
  * Created by zhaoliangtai on 2017/8/18.
@@ -29,7 +30,9 @@ public class CameraActivity extends FullScreenActivity {
             @Override
             public void onClick(View v) {
 //                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
-                CameraHelper.getInstance().startRecordingVideo(fragment.getSurface());
+                int rotation = getWindowManager().getDefaultDisplay().getRotation();
+                CameraHelper.getInstance().startRecordingVideo(UIUtils.getScreenRate(CameraActivity.this),
+                        fragment.getSurfaceTexture(), rotation);
             }
         });
     }

@@ -37,18 +37,19 @@ public class MediaRecorderWrapper {
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         } else {
             isLollipop = false;
-//            mediaRecorder.setCamera(camera);
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+            mediaRecorder.setCamera(camera);
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         }
         Log.i(TAG, "video width: " + videoWidth + ", height: " + videoHeight);
+        mediaRecorder.setOrientationHint(rotation);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mediaRecorder.setVideoFrameRate(fps);
+        mediaRecorder.setAudioChannels(2);
         mediaRecorder.setVideoEncodingBitRate(bitRate);
+        mediaRecorder.setVideoFrameRate(fps);
         mediaRecorder.setVideoSize(videoWidth, videoHeight);
-//        mediaRecorder.setOrientationHint(rotation);
         mediaRecorder.setPreviewDisplay(displaySurface);
         result = new MediaRecorderWrapper(mediaRecorder);
         return result;
@@ -71,10 +72,10 @@ public class MediaRecorderWrapper {
         mMediaRecorder.setOutputFile(outputFilePath);
         try {
             mMediaRecorder.prepare();
+            mMediaRecorder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mMediaRecorder.start();
     }
 
     public void releaseRecorder() {

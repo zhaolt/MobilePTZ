@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,11 +50,12 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 //            }
 //        }
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-        CameraHelper.getInstance().openCamera(UIUtils.getScreenRate(getActivity()), surface, rotation);
+        CameraHelper.getInstance().openCamera(UIUtils.getScreenRate(getActivity()), surface,
+                rotation, CameraHelper.PHOTO_CAMERA);
     }
 
-    public Surface getSurface() {
-        return new Surface(mDisplayView.getSurfaceTexture());
+    public SurfaceTexture getSurfaceTexture() {
+        return mDisplayView.getSurfaceTexture();
     }
 
     @Override
