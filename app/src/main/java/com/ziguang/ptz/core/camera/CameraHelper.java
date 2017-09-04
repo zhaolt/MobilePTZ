@@ -107,6 +107,7 @@ public class CameraHelper {
         printSupportPictureSize(mParameters);
         printSupportVideoSize(mParameters);
         printSupportFocusMode(mParameters);
+        printSupportWhiteBalance(mParameters);
         switch (cameraType) {
             case PHOTO_CAMERA:
                 setUpPhotoCamera(previewRate, surfaceTexture, rotation);
@@ -124,12 +125,14 @@ public class CameraHelper {
 
     private void setUpPhotoCamera(float previewRate, SurfaceTexture surfaceTexture, int rotation) {
         mParameters.setPictureFormat(PixelFormat.JPEG);
+//        mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
         Camera.Size pictureSize = getPropPictureSize(mParameters.getSupportedPictureSizes(),
                 previewRate, 800);
         mParameters.setPictureSize(pictureSize.width, pictureSize.height);
-        Camera.Size previewSize = getPropPreviewSize(mParameters.getSupportedPreviewSizes(),
-                previewRate, 800);
+        Log.i(TAG, "choose picture size width: " + pictureSize.width + ", height: " + pictureSize.height);
+        Camera.Size previewSize = Collections.max(mParameters.getSupportedPreviewSizes(), new CameraSizeComparator());
         mParameters.setPreviewSize(previewSize.width, previewSize.height);
+        Log.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
         setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         try {
@@ -137,6 +140,7 @@ public class CameraHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mCamera.setParameters(mParameters);
         mCamera.startPreview();
         isPreview = true;
         mParameters = mCamera.getParameters();
@@ -148,6 +152,8 @@ public class CameraHelper {
         Log.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
         setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
+        mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+        mCamera.setParameters(mParameters);
     }
 
     private void setUpFocusMode(String focusMode) {
@@ -239,6 +245,13 @@ public class CameraHelper {
         }
     }
 
+    private void printSupportWhiteBalance(Camera.Parameters params) {
+        List<String> whiteBalances = params.getSupportedWhiteBalance();
+        for (String whiteBalance : whiteBalances) {
+            Log.i(TAG, "whiteBalance--" + whiteBalance);
+        }
+    }
+
     private boolean equalRate(Camera.Size s, float rate) {
         float r = (float) (s.width) / (float) (s.height);
         if (Math.abs(r - rate) <= 0.03) {
@@ -306,9 +319,9 @@ public class CameraHelper {
 
     }
 
-
-    /**
-     * set up a take picture camera
-     * set up a recording video camera
-     */
+    public void setWhiteBalance(String whiteBalance) {
+        mParameters.setWhiteBalance(whiteBalance);
+        mCamera.setParameters(mParameters);
+        mParameters = mCamera.getParameters();
+    }
 }

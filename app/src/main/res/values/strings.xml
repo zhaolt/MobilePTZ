@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">MobilePTZ</string>
+
+    <!-- common -->
+    <string name="goto_setting">去设置</string>
+    <string name="negative">取消</string>
+
+
+    <!-- permissions -->
+    <string name="permission_hint">权限提醒</string>
+    <string name="permission_describe_reason">程序需要-%1$s-以正常运行</string>
+    <string name="permission_way">请在设置-应用-%1$s-权限中开启-%2$s-权限,以正常使用</string>
+    <string name="permission_storage">存储权限</string>
+    <string name="permission_sdcard">存储</string>
+    <string name="permission_camera_lens">摄像头权限</string>
+    <string name="permission_camera">相机</string>
+    <string name="permission_recording_audio">录音权限</string>
+    <string name="permission_recording_mic">麦克风</string>
+
+    <!-- camera -->
 </resources>

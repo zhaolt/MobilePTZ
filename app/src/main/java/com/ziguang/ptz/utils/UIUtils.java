@@ -50,10 +50,14 @@ public class UIUtils {
         return (int) (spValue * fontScale + 0.5f);
     }
 
-    public static float getScreenRate(Context context){
+    public static float getScreenRate(Context context, int screenRotaion){
         Point P = getScreenMetrics(context);
         float H = P.y;
         float W = P.x;
-        return (H/W);
+        if (screenRotaion == 0) {
+            return (H/W);
+        } else {
+            return (W/H);
+        }
     }
 }
