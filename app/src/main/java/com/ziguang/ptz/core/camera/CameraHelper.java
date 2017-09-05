@@ -33,6 +33,10 @@ public class CameraHelper {
 
     public static final int VIDEO_CAMERA = 1007;
 
+    private static final int REAR_CAMERA = 0;
+
+    private static final int FRONT_CAMERA = 1;
+
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -51,6 +55,8 @@ public class CameraHelper {
     private boolean isPreview = false;
 
     private int mRotation = -1;
+
+    private int mCameraID = 0;
 
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
@@ -94,10 +100,10 @@ public class CameraHelper {
         return SingleTon.INSTANCE;
     }
 
-    public void openCamera(float previewRate, SurfaceTexture surfaceTexture, int rotation,
+    public void openCamera(SurfaceTexture surfaceTexture, int rotation,
                            int cameraType) {
         closeCamera();
-        mCamera = Camera.open();
+        mCamera = Camera.open(mCameraID);
         if (isPreview) {
             mCamera.stopPreview();
             isPreview = false;
@@ -110,30 +116,31 @@ public class CameraHelper {
         printSupportWhiteBalance(mParameters);
         switch (cameraType) {
             case PHOTO_CAMERA:
-                setUpPhotoCamera(previewRate, surfaceTexture, rotation);
+                setUpPhotoCamera(surfaceTexture, rotation);
                 break;
             case VIDEO_CAMERA:
-                setUpVideoCamera(rotation);
+                setUpVideoCamera(surfaceTexture, rotation);
                 break;
             default:
-                setUpPhotoCamera(previewRate, surfaceTexture, rotation);
+                setUpPhotoCamera(surfaceTexture, rotation);
                 break;
         }
 
         mRotation = rotation;
     }
 
-    private void setUpPhotoCamera(float previewRate, SurfaceTexture surfaceTexture, int rotation) {
+    private void setUpPhotoCamera(SurfaceTexture surfaceTexture, int rotation) {
         mParameters.setPictureFormat(PixelFormat.JPEG);
-//        mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-        Camera.Size pictureSize = getPropPictureSize(mParameters.getSupportedPictureSizes(),
-                previewRate, 800);
+//        Camera.Size pictureSize = Collections.max(mParameters.getSupportedPictureSizes(), new CameraSizeComparator());
+        Camera.Size pictureSize = mParameters.getSupportedPictureSizes().get(0);
         mParameters.setPictureSize(pictureSize.width, pictureSize.height);
         Log.i(TAG, "choose picture size width: " + pictureSize.width + ", height: " + pictureSize.height);
         Camera.Size previewSize = Collections.max(mParameters.getSupportedPreviewSizes(), new CameraSizeComparator());
         mParameters.setPreviewSize(previewSize.width, previewSize.height);
         Log.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
-        setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        if (!isFrontCamera()) {
+            setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         try {
             mCamera.setPreviewTexture(surfaceTexture);
@@ -147,13 +154,23 @@ public class CameraHelper {
         mCamera.cancelAutoFocus();
     }
 
-    private void setUpVideoCamera(int rotation) {
+    private void setUpVideoCamera(SurfaceTexture surfaceTexture, int rotation) {
         mVideoSize = Collections.max(mParameters.getSupportedVideoSizes(), new CompareSizesByArea());
         Log.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
-        setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+        if (!isFrontCamera()) {
+            setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+        }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+        try {
+            mCamera.setPreviewTexture(surfaceTexture);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mCamera.setParameters(mParameters);
+        mCamera.startPreview();
+        isPreview = true;
+        mParameters = mCamera.getParameters();
     }
 
     private void setUpFocusMode(String focusMode) {
@@ -188,9 +205,7 @@ public class CameraHelper {
      * create MediaRecorderWrapper
      * recording video
      */
-    public void startRecordingVideo(float previewRate, SurfaceTexture surfaceTexture,
-                                    int rotation) {
-        openCamera(previewRate, surfaceTexture, rotation, VIDEO_CAMERA);
+    public void startRecordingVideo(SurfaceTexture surfaceTexture) {
         Surface surface = new Surface(surfaceTexture);
         mCamera.unlock();
         final MediaRecorderWrapper mediaRecorderWrapper = MediaRecorderWrapper.setUpMediaRecord(mCamera,
@@ -204,6 +219,11 @@ public class CameraHelper {
                 mCamera.startPreview();
             }
         }, 10 * 1000);
+    }
+
+    public void chooseVideoMode(SurfaceTexture surfaceTexture,
+                                int rotation) {
+        openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
     }
 
 
@@ -323,5 +343,24 @@ public class CameraHelper {
         mParameters.setWhiteBalance(whiteBalance);
         mCamera.setParameters(mParameters);
         mParameters = mCamera.getParameters();
+    }
+
+    public void setFlashMode(String flashMode) {
+        if (isFrontCamera()) {
+            return;
+        }
+        mParameters.setFlashMode(flashMode);
+        mCamera.setParameters(mParameters);
+        mParameters = mCamera.getParameters();
+    }
+
+    public void switchCamera(SurfaceTexture surfaceTexture, int rotation) {
+        mCameraID++;
+        mCameraID %= 2;
+        openCamera(surfaceTexture, rotation, PHOTO_CAMERA);
+    }
+
+    public boolean isFrontCamera() {
+        return mCameraID == FRONT_CAMERA;
     }
 }

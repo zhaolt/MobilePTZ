@@ -7,6 +7,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 
@@ -15,7 +17,6 @@ import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
-import com.ziguang.ptz.utils.UIUtils;
 
 /**
  * Created by zhaoliangtai on 2017/8/18.
@@ -67,8 +68,8 @@ public class CameraActivity extends FullScreenActivity {
             public void onClick(View v) {
 //                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
                 int rotation = getWindowManager().getDefaultDisplay().getRotation();
-                CameraHelper.getInstance().startRecordingVideo(UIUtils.getScreenRate(CameraActivity.this, rotation),
-                        finalFragment.getSurfaceTexture(), rotation);
+//                CameraHelper.getInstance().startRecordingVideo(finalFragment.getSurfaceTexture(), rotation);
+                CameraHelper.getInstance().chooseVideoMode(finalFragment.getSurfaceTexture(), rotation);
             }
         });
 
@@ -96,6 +97,38 @@ public class CameraActivity extends FullScreenActivity {
                         CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
                         break;
                 }
+            }
+        });
+        RadioGroup flashGroup = (RadioGroup) findViewById(R.id.flash_group);
+        flashGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId) {
+                    case R.id.flash_auto:
+                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                        break;
+                    case R.id.flash_off:
+                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        break;
+                    case R.id.flash_on:
+                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                        break;
+                    case R.id.flash_all_on:
+                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        break;
+                    default:
+                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        break;
+                }
+            }
+        });
+
+        CheckBox frontCamera = (CheckBox) findViewById(R.id.checkbox);
+        frontCamera.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int rotation = getWindowManager().getDefaultDisplay().getRotation();
+                CameraHelper.getInstance().switchCamera(finalFragment.getSurfaceTexture(), rotation);
             }
         });
     }

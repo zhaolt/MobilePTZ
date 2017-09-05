@@ -45,8 +45,7 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 //            }
 //        }
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-        CameraHelper.getInstance().openCamera(UIUtils.getScreenRate(getActivity(), rotation), surface,
-                rotation, CameraHelper.PHOTO_CAMERA);
+        CameraHelper.getInstance().openCamera(surface, rotation, CameraHelper.PHOTO_CAMERA);
     }
 
     public SurfaceTexture getSurfaceTexture() {

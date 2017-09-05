@@ -65,15 +65,28 @@ public class MediaRecorderWrapper {
         return null;
     }
 
-    public void startRecordingVideo(String outputFilePath) {
+    public void prepare() {
+        checkRecorderNotNull();
+        try {
+            mMediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkRecorderNotNull() {
         if (null == mMediaRecorder) {
             throw new NullPointerException("MediaRecorder is NULL!");
         }
+    }
+
+    public void startRecordingVideo(String outputFilePath) {
+        checkRecorderNotNull();
         mMediaRecorder.setOutputFile(outputFilePath);
         try {
-            mMediaRecorder.prepare();
+//            mMediaRecorder.prepare();
             mMediaRecorder.start();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -86,10 +99,9 @@ public class MediaRecorderWrapper {
     }
 
     public void stopRecordingVideo() {
-        if (null == mMediaRecorder) {
-            throw new NullPointerException("MediaRecorder is NULL!");
-        }
+        checkRecorderNotNull();
         mMediaRecorder.stop();
         mMediaRecorder.reset();
     }
+
 }
