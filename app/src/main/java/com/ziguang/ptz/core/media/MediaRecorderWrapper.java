@@ -2,12 +2,8 @@ package com.ziguang.ptz.core.media;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Surface;
-
-import java.io.IOException;
 
 /**
  * Created by zhaoliangtai on 2017/8/24.
@@ -55,25 +51,6 @@ public class MediaRecorderWrapper {
         return result;
     }
 
-
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public Surface getSurface() {
-        if (mMediaRecorder != null) {
-            return mMediaRecorder.getSurface();
-        }
-        return null;
-    }
-
-    public void prepare() {
-        checkRecorderNotNull();
-        try {
-            mMediaRecorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void checkRecorderNotNull() {
         if (null == mMediaRecorder) {
             throw new NullPointerException("MediaRecorder is NULL!");
@@ -84,7 +61,7 @@ public class MediaRecorderWrapper {
         checkRecorderNotNull();
         mMediaRecorder.setOutputFile(outputFilePath);
         try {
-//            mMediaRecorder.prepare();
+            mMediaRecorder.prepare();
             mMediaRecorder.start();
         } catch (Exception e) {
             e.printStackTrace();

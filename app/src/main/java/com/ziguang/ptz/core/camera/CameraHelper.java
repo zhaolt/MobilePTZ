@@ -3,6 +3,8 @@ package com.ziguang.ptz.core.camera;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Environment;
@@ -17,6 +19,7 @@ import com.ziguang.ptz.utils.ImageUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -58,6 +61,10 @@ public class CameraHelper {
 
     private int mCameraID = 0;
 
+    private boolean isSupportedAutoFocus = true;
+
+    private int mCameraMode = PHOTO_CAMERA;
+
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
@@ -69,13 +76,13 @@ public class CameraHelper {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             Bitmap b = null;
-            if(null != data){
+            if (null != data) {
                 b = BitmapFactory.decodeByteArray(data, 0, data.length);//data是字节数据，将其解析成位图
                 mCamera.stopPreview();
                 isPreview = false;
             }
             //保存图片到sdcard
-            if(null != b) {
+            if (null != b) {
                 Bitmap rotaBitmap = ImageUtils.getRotateBitmap(b, ORIENTATIONS.get(mRotation));
                 FileUtils.checkJpegDir();
                 File file = FileUtils.createJpeg();
@@ -114,6 +121,8 @@ public class CameraHelper {
         printSupportVideoSize(mParameters);
         printSupportFocusMode(mParameters);
         printSupportWhiteBalance(mParameters);
+        printSupportSceneModes(mParameters);
+        isSupportedAutoFocus = mParameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_AUTO);
         switch (cameraType) {
             case PHOTO_CAMERA:
                 setUpPhotoCamera(surfaceTexture, rotation);
@@ -140,6 +149,7 @@ public class CameraHelper {
         Log.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            setUpScenceMode(Camera.Parameters.SCENE_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         try {
@@ -152,6 +162,7 @@ public class CameraHelper {
         isPreview = true;
         mParameters = mCamera.getParameters();
         mCamera.cancelAutoFocus();
+        mCameraMode = PHOTO_CAMERA;
     }
 
     private void setUpVideoCamera(SurfaceTexture surfaceTexture, int rotation) {
@@ -159,6 +170,7 @@ public class CameraHelper {
         Log.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            setUpScenceMode(Camera.Parameters.SCENE_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
@@ -167,24 +179,31 @@ public class CameraHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mCamera.setParameters(mParameters);
+        applyParameters();
         mCamera.startPreview();
         isPreview = true;
+        mCameraMode = VIDEO_CAMERA;
+    }
+
+    public void applyParameters() {
+        mCamera.setParameters(mParameters);
         mParameters = mCamera.getParameters();
     }
 
-    private void setUpFocusMode(String focusMode) {
+    public void setUpFocusMode(String focusMode) {
         List<String> focusModes = mParameters.getSupportedFocusModes();
-        if (focusModes.contains("focusMode")) {
+        if (focusModes.contains(focusMode)) {
             mParameters.setFocusMode(focusMode);
         } else {
             mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         }
     }
 
-
-    public void setAutoFocus(Camera.AutoFocusCallback callback) {
-        mCamera.autoFocus(callback);
+    public void setUpScenceMode(String scenceMode) {
+        List<String> scenceModes = mParameters.getSupportedSceneModes();
+        if (scenceModes.contains(scenceMode)) {
+            mParameters.setSceneMode(scenceMode);
+        }
     }
 
     public void closeCamera() {
@@ -196,7 +215,6 @@ public class CameraHelper {
             mCamera = null;
         }
     }
-
 
     /**
      * stop preview
@@ -225,7 +243,6 @@ public class CameraHelper {
                                 int rotation) {
         openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
     }
-
 
 
     public void takePicture(int rotation) {
@@ -272,48 +289,12 @@ public class CameraHelper {
         }
     }
 
-    private boolean equalRate(Camera.Size s, float rate) {
-        float r = (float) (s.width) / (float) (s.height);
-        if (Math.abs(r - rate) <= 0.03) {
-            return true;
-        } else {
-            return false;
+    private void printSupportSceneModes(Camera.Parameters params) {
+        List<String> sceneModes = params.getSupportedSceneModes();
+        for (String sceneMode : sceneModes) {
+            Log.i(TAG, "sceneMode--" + sceneMode);
         }
     }
-
-    public Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
-        Collections.sort(list, sizeComparator);
-
-        int i = 0;
-        for(Camera.Size s:list){
-            if((s.width >= minWidth) && equalRate(s, th)){
-                Log.i(TAG, "PreviewSize:w = " + s.width + "h = " + s.height);
-                break;
-            }
-            i++;
-        }
-        if(i == list.size()){
-            i = 0;//如果没找到，就选最小的size
-        }
-        return list.get(i);
-    }
-
-    private Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth) {
-        Collections.sort(list, sizeComparator);
-        int i = 0;
-        for (Camera.Size s : list) {
-            if ((s.width >= minWidth) && equalRate(s, th)) {
-                Log.i(TAG, "PictureSize : w = " + s.width + "h = " + s.height);
-                break;
-            }
-            i++;
-        }
-        if (i == list.size()) {
-            i = 0;//如果没找到，就选最小的size
-        }
-        return list.get(i);
-    }
-
 
     public class CameraSizeComparator implements Comparator<Camera.Size> {
         public int compare(Camera.Size lhs, Camera.Size rhs) {
@@ -341,8 +322,7 @@ public class CameraHelper {
 
     public void setWhiteBalance(String whiteBalance) {
         mParameters.setWhiteBalance(whiteBalance);
-        mCamera.setParameters(mParameters);
-        mParameters = mCamera.getParameters();
+        applyParameters();
     }
 
     public void setFlashMode(String flashMode) {
@@ -350,8 +330,7 @@ public class CameraHelper {
             return;
         }
         mParameters.setFlashMode(flashMode);
-        mCamera.setParameters(mParameters);
-        mParameters = mCamera.getParameters();
+        applyParameters();
     }
 
     public void switchCamera(SurfaceTexture surfaceTexture, int rotation) {
@@ -362,5 +341,50 @@ public class CameraHelper {
 
     public boolean isFrontCamera() {
         return mCameraID == FRONT_CAMERA;
+    }
+
+    public void areaFocus(float x, float y, float coefficient, Camera.AutoFocusCallback cb) {
+        if (!isSupportedAutoFocus) {
+            return;
+        }
+        Rect rect = calculateTapArea(x, y, coefficient);
+        focusOnRect(rect, cb);
+    }
+
+    private void focusOnRect(Rect rect, Camera.AutoFocusCallback cb) {
+        setUpFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        if (mParameters.getMaxNumFocusAreas() > 0) {
+            List<Camera.Area> focusArea = new ArrayList<>();
+            focusArea.add(new Camera.Area(rect, 300));
+            mParameters.setFocusAreas(focusArea);
+        } else {
+            return;
+        }
+        mCamera.cancelAutoFocus();
+        applyParameters();
+        mCamera.autoFocus(cb);
+    }
+
+
+    private Rect calculateTapArea(float x, float y, float coefficient) {
+        float focusAreaSize = 200;
+        int areaSize = Float.valueOf(focusAreaSize + coefficient).intValue();
+        int centerX = (int) (x * 2000 - 1000);
+        int centerY = (int) (y * 2000 - 1000);
+        int left = clamp(centerX - (areaSize / 2), -1000, 1000 - areaSize);
+        int top = clamp(centerY - (areaSize / 2), -1000, 1000 - areaSize);
+        RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
+        return new Rect(Math.round(rectF.left), Math.round(rectF.top),
+                Math.round(rectF.right), Math.round(rectF.bottom));
+    }
+
+    private int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+        if (x < min) {
+            return min;
+        }
+        return x;
     }
 }
