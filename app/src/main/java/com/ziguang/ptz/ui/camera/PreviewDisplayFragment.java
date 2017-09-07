@@ -4,6 +4,8 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -36,6 +38,21 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
     private GestureDetector mGestureDetector;
 
     private boolean isFocusing = false;
+
+    private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+
+    private Runnable mDefaultFocusModeTask = new Runnable() {
+        @Override
+        public void run() {
+            CameraHelper.getInstance().setUpFocusMode(
+                    CameraHelper.getInstance().getCameraMode() ==
+                            CameraHelper.PHOTO_CAMERA ?
+                            Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE :
+                            Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            CameraHelper.getInstance().setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+            CameraHelper.getInstance().applyParameters();
+        }
+    };
 
     @Nullable
     @Override
@@ -78,6 +95,7 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 
     public void areaFocus(Point point, int width, int height) {
         if (isFocusing) return;
+        mMainThreadHandler.removeCallbacks(mDefaultFocusModeTask);
         isFocusing = true;
         float x = (float) point.x / (float) width;
         float y = (float) point.y / (float) height;
@@ -92,6 +110,8 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
                 } else {
                     mFocusImageView.onFocusFailed();
                 }
+                // 2秒后恢复默认模式
+                mMainThreadHandler.postDelayed(mDefaultFocusModeTask, 2000);
             }
         });
     }

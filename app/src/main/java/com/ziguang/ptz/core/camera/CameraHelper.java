@@ -149,7 +149,7 @@ public class CameraHelper {
         Log.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            setUpScenceMode(Camera.Parameters.SCENE_MODE_AUTO);
+            setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         try {
@@ -170,7 +170,7 @@ public class CameraHelper {
         Log.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-            setUpScenceMode(Camera.Parameters.SCENE_MODE_AUTO);
+            setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
@@ -183,6 +183,10 @@ public class CameraHelper {
         mCamera.startPreview();
         isPreview = true;
         mCameraMode = VIDEO_CAMERA;
+    }
+
+    public int getCameraMode() {
+        return mCameraMode;
     }
 
     public void applyParameters() {
@@ -199,10 +203,10 @@ public class CameraHelper {
         }
     }
 
-    public void setUpScenceMode(String scenceMode) {
-        List<String> scenceModes = mParameters.getSupportedSceneModes();
-        if (scenceModes.contains(scenceMode)) {
-            mParameters.setSceneMode(scenceMode);
+    public void setUpSceneMode(String sceneMode) {
+        List<String> sceneModes = mParameters.getSupportedSceneModes();
+        if (sceneModes.contains(sceneMode)) {
+            mParameters.setSceneMode(sceneMode);
         }
     }
 
