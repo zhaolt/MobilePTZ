@@ -131,6 +131,21 @@ public class CameraActivity extends FullScreenActivity {
                 CameraHelper.getInstance().switchCamera(finalFragment.getSurfaceTexture(), rotation);
             }
         });
+
+        RadioGroup antibandingGroup = (RadioGroup) findViewById(R.id.antibanding_group);
+        antibandingGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId) {
+                    case R.id.antibanding_50hz:
+                        CameraHelper.getInstance().setAntibanding(Camera.Parameters.ANTIBANDING_50HZ);
+                        break;
+                    case R.id.antibanding_auto:
+                        CameraHelper.getInstance().setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
+                        break;
+                }
+            }
+        });
     }
 
     public void permissionDeniedForeverCallback(String[] permissions) {

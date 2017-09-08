@@ -122,6 +122,7 @@ public class CameraHelper {
         printSupportFocusMode(mParameters);
         printSupportWhiteBalance(mParameters);
         printSupportSceneModes(mParameters);
+        printSupportAntibanding(mParameters);
         isSupportedAutoFocus = mParameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_AUTO);
         switch (cameraType) {
             case PHOTO_CAMERA:
@@ -300,6 +301,13 @@ public class CameraHelper {
         }
     }
 
+    private void printSupportAntibanding(Camera.Parameters params) {
+        List<String> antibandings = params.getSupportedAntibanding();
+        for (String antibanding : antibandings) {
+            Log.i(TAG, "antibanding--" + antibanding);
+        }
+    }
+
     public class CameraSizeComparator implements Comparator<Camera.Size> {
         public int compare(Camera.Size lhs, Camera.Size rhs) {
             if (lhs.width == rhs.width) {
@@ -334,6 +342,14 @@ public class CameraHelper {
             return;
         }
         mParameters.setFlashMode(flashMode);
+        applyParameters();
+    }
+
+    public void setAntibanding(String antibanding) {
+        List<String> antibandings = mParameters.getSupportedAntibanding();
+        if (antibandings.contains(antibanding)) {
+            mParameters.setAntibanding(antibanding);
+        }
         applyParameters();
     }
 

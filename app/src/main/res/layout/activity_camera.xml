@@ -98,4 +98,24 @@
         android:textColor="#ffffff"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"/>
+
+    <RadioGroup
+        android:id="@+id/antibanding_group"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/antibanding_50hz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:text="抗闪烁-50HZ"/>
+        <RadioButton
+            android:id="@+id/antibanding_auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:text="抗闪烁-自动"/>
+    </RadioGroup>
 </RelativeLayout>
