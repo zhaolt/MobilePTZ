@@ -5,4 +5,10 @@
         <attr name="focus_success_id" format="integer" />
         <attr name="focus_fail_id" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="TitleBar">
+        <attr name="back_image" format="reference"/>
+        <attr name="title" format="string|reference"/>
+        <attr name="background" format="color"/>
+    </declare-styleable>
 </resources>
