@@ -50,9 +50,9 @@ public class TitleBar extends RelativeLayout {
                 R.styleable.TitleBar, 0, 0);
         Drawable drawable = typedArray.getDrawable(R.styleable.TitleBar_back_image);
         mBackImg.setImageDrawable(drawable);
-        String title = typedArray.getString(R.styleable.TitleBar_title);
+        String title = typedArray.getString(R.styleable.TitleBar_title_text);
         mTitle.setText(title);
-        int background = typedArray.getColor(R.styleable.TitleBar_background, context.getResources()
+        int background = typedArray.getColor(R.styleable.TitleBar_bg_color, context.getResources()
                 .getColor(R.color.md_btn_selected));
         mRootView.setBackgroundColor(background);
         typedArray.recycle();

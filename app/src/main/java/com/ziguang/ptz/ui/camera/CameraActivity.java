@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.ziguang.ptz.R;
@@ -30,6 +31,7 @@ public class CameraActivity extends FullScreenActivity {
     private static final String TAG = CameraActivity.class.getSimpleName();
 
     private ImageButton mCameraSetting;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,6 +146,15 @@ public class CameraActivity extends FullScreenActivity {
                         CameraHelper.getInstance().setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
                         break;
                 }
+            }
+        });
+
+        ImageView shutter = (ImageView) findViewById(R.id.iv_shutter);
+        shutter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraHelper.getInstance().takePicture(getWindowManager()
+                        .getDefaultDisplay().getRotation());
             }
         });
     }

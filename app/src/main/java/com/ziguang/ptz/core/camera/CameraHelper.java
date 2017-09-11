@@ -13,7 +13,9 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
+import com.ziguang.ptz.App;
 import com.ziguang.ptz.core.media.MediaRecorderWrapper;
+import com.ziguang.ptz.rx.NCSubscriber;
 import com.ziguang.ptz.utils.FileUtils;
 import com.ziguang.ptz.utils.ImageUtils;
 
@@ -23,6 +25,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zhaoliangtai on 2017/8/23.
@@ -83,10 +90,25 @@ public class CameraHelper {
             }
             //保存图片到sdcard
             if (null != b) {
-                Bitmap rotaBitmap = ImageUtils.getRotateBitmap(b, ORIENTATIONS.get(mRotation));
-                FileUtils.checkJpegDir();
-                File file = FileUtils.createJpeg();
-                FileUtils.saveBitmap(file, rotaBitmap);
+                final Bitmap finalB = b;
+                if (FileUtils.checkJpegDir()) {
+                    saveBitmap(finalB);
+                } else {
+                    App.INSTANCE.createDirs()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new NCSubscriber() {
+                                @Override
+                                public void doOnNext(Object o) {
+                                    saveBitmap(finalB);
+                                }
+
+                                @Override
+                                public void doOnError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                }
             }
             //再次进入预览
             mCamera.startPreview();
@@ -94,7 +116,38 @@ public class CameraHelper {
         }
     };
 
-    private CameraSizeComparator sizeComparator = new CameraSizeComparator();
+    private void saveBitmap(final Bitmap finalB) {
+        Observable.create(new Observable.OnSubscribe<File>() {
+            @Override
+            public void call(Subscriber<? super File> subscriber) {
+                Bitmap rotaBitmap = ImageUtils.getRotateBitmap(finalB, ORIENTATIONS.get(mRotation));
+                File file = FileUtils.createJpeg();
+                if (FileUtils.saveBitmap(file, rotaBitmap)) {
+                    subscriber.onNext(file);
+                } else {
+                    subscriber.onNext(null);
+                }
+                subscriber.onCompleted();
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new NCSubscriber<File>() {
+
+                    @Override
+                    public void doOnNext(File file) {
+                        if (null != file) {
+                            ImageUtils.addToMediaStore(App.INSTANCE, file);
+                        }
+                    }
+
+                    @Override
+                    public void doOnError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
 
     private CameraHelper() {
     }
