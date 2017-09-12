@@ -18,6 +18,9 @@ public interface MediaDataSource {
 
     Observable<List<Media>> getMedias();
 
-    void save(@NonNull List<Media> medias);
+    void saveMedias(@NonNull List<Media> medias);
 
+    void saveImages(@NonNull List<Media> medias);
+
+    void saveVideos(@NonNull List<Media> medias);
 }

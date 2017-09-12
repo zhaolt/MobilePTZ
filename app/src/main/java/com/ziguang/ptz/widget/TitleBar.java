@@ -18,6 +18,21 @@ import com.ziguang.ptz.R;
 
 public class TitleBar extends RelativeLayout {
 
+    private static final int DISPLAY_NO_TITLE = 2;
+    private static final int DISPLAY_NO_BACK = 4;
+    private static final int DISPLAY_NO_ACTION_IMAGE = 8;
+    private static final int DISPLAY_NO_INDICATOR = 16;
+    private static final int DISPLAY_NO_ACTION_TEXT = 32;
+    private static final int DISPLAY_NO_BACK_IMAGE = 64;
+
+    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_TEXT = DISPLAY_NO_INDICATOR
+            | DISPLAY_NO_ACTION_IMAGE
+            | DISPLAY_NO_BACK_IMAGE;
+
+    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_IMAGE = DISPLAY_NO_INDICATOR
+            | DISPLAY_NO_ACTION_IMAGE
+            | DISPLAY_NO_BACK;
+
     private View mView;
 
     private ImageView mBackImg;
@@ -58,4 +73,18 @@ public class TitleBar extends RelativeLayout {
         typedArray.recycle();
     }
 
+    public void setActionMode(int mode) {
+        mBackImg.setVisibility(VISIBLE);
+        mBackText.setVisibility(VISIBLE);
+        mRightText.setVisibility(VISIBLE);
+        if ((mode & DISPLAY_NO_ACTION_TEXT) == DISPLAY_NO_ACTION_TEXT) {
+            mRightText.setVisibility(GONE);
+        }
+        if ((mode & DISPLAY_NO_BACK) == DISPLAY_NO_BACK) {
+            mBackText.setVisibility(GONE);
+        }
+        if ((mode & DISPLAY_NO_BACK_IMAGE) == DISPLAY_NO_BACK_IMAGE) {
+            mBackImg.setVisibility(GONE);
+        }
+    }
 }

@@ -25,11 +25,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ALBUM_ENTRIES =
             "CREATE TABLE " + PersistenceContract.AlbumEntry.TABLE_NAME + " (" +
                     PersistenceContract.AlbumEntry._ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
-                    PersistenceContract.AlbumEntry.MEDIA_PATH + TEXT_TYPE + COMMA_SEP +
-                    PersistenceContract.AlbumEntry.LOCATION + TEXT_TYPE + COMMA_SEP +
                     PersistenceContract.AlbumEntry.MEDIA_TYPE + INTEGER_TYPE + COMMA_SEP +
-                    PersistenceContract.AlbumEntry.DURATION + INTEGER_TYPE + COMMA_SEP +
-                    PersistenceContract.AlbumEntry.DATE + TEXT_TYPE + ")";
+                    PersistenceContract.AlbumEntry.DATA + TEXT_TYPE + COMMA_SEP +
+                    "UNIQUE (" + PersistenceContract.AlbumEntry._ID + ") ON CONFLICT REPLACE)";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -290,7 +290,17 @@ public class MediaSystemDataSource implements MediaDataSource {
     }
 
     @Override
-    public void save(@NonNull List<Media> medias) {
+    public void saveMedias(@NonNull List<Media> medias) {
+        // do nothing
+    }
+
+    @Override
+    public void saveImages(@NonNull List<Media> medias) {
+        // do nothing
+    }
+
+    @Override
+    public void saveVideos(@NonNull List<Media> medias) {
         // do nothing
     }
 

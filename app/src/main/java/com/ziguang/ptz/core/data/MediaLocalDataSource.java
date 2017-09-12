@@ -1,10 +1,13 @@
 package com.ziguang.ptz.core.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ziguang.ptz.App;
 import com.ziguang.ptz.core.database.DatabaseHelper;
 import com.ziguang.ptz.core.database.PersistenceContract;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zhaoliangtai on 2017/9/11.
@@ -38,7 +42,11 @@ public class MediaLocalDataSource implements MediaDataSource {
 
     @Override
     public Observable<List<Media>> getImages() {
-        final String sql = String.format("SELECT * FROM %s WHERE %s=?",
+        final String[] projection = {
+                PersistenceContract.AlbumEntry.DATA
+        };
+        final String sql = String.format("SELECT %s FROM %s WHERE %s=?",
+                TextUtils.join(",", projection),
                 PersistenceContract.AlbumEntry.TABLE_NAME,
                 PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
@@ -46,41 +54,32 @@ public class MediaLocalDataSource implements MediaDataSource {
             @Override
             public List<Media> call() throws Exception {
                 Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_IMAGE)});
-                List<Media> mediaList = new ArrayList<>();
                 try {
-                    while (cursor != null && cursor.moveToNext()) {
-                        Media media = new Media();
-                        String id = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry._ID));
-                        String path = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.MEDIA_PATH));
-                        String location = cursor.getString(cursor.getColumnIndex(
-                                PersistenceContract.AlbumEntry.LOCATION));
-                        int date = cursor.getInt(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.DATE));
-                        media.setId(id);
-                        media.setPath(path);
-                        if (!TextUtils.isEmpty(location)) {
-                            String[] temp = location.split(",");
-                            float longitude = Float.valueOf(temp[0]);
-                            float latitude = Float.valueOf(temp[1]);
-                            media.setLongitude(longitude);
-                            media.setLatitude(latitude);
+                    if (cursor != null && cursor.moveToNext()) {
+                        String data = cursor.getString(cursor.getColumnIndexOrThrow(
+                                PersistenceContract.AlbumEntry.DATA));
+                        List<Media> medias = new Gson().fromJson(data,
+                                new TypeToken<List<Media>>(){}.getType());
+                        if (medias == null) {
+                            return new ArrayList<>();
                         }
-                        media.setDate(date);
-                        mediaList.add(media);
+                        return medias;
                     }
+                    return null;
                 } finally {
                     FileUtils.close(cursor);
                 }
-                return mediaList;
             }
         });
     }
 
     @Override
     public Observable<List<Media>> getVideos() {
-        final String sql = String.format("SELECT * FROM %s WHERE %s=?",
+        final String[] projection = {
+                PersistenceContract.AlbumEntry.DATA
+        };
+        final String sql = String.format("SELECT %s FROM %s WHERE %s=?",
+                TextUtils.join(",", projection),
                 PersistenceContract.AlbumEntry.TABLE_NAME,
                 PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
@@ -88,92 +87,110 @@ public class MediaLocalDataSource implements MediaDataSource {
             @Override
             public List<Media> call() throws Exception {
                 Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_VIDEO)});
-                List<Media> mediaList = new ArrayList<>();
                 try {
-                    while (cursor != null && cursor.moveToNext()) {
-                        Media media = new Media();
-                        String id = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry._ID));
-                        String path = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.MEDIA_PATH));
-                        String location = cursor.getString(cursor.getColumnIndex(
-                                PersistenceContract.AlbumEntry.LOCATION));
-                        int date = cursor.getInt(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.DATE));
-                        int duration = cursor.getInt(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.DURATION));
-                        media.setId(id);
-                        media.setPath(path);
-                        if (!TextUtils.isEmpty(location)) {
-                            String[] temp = location.split(",");
-                            float longitude = Float.valueOf(temp[0]);
-                            float latitude = Float.valueOf(temp[1]);
-                            media.setLongitude(longitude);
-                            media.setLatitude(latitude);
+                    if (cursor != null && cursor.moveToNext()) {
+                        String data = cursor.getString(cursor.getColumnIndexOrThrow(
+                                PersistenceContract.AlbumEntry.DATA));
+                        List<Media> medias = new Gson().fromJson(data,
+                                new TypeToken<List<Media>>(){}.getType());
+                        if (medias == null) {
+                            return new ArrayList<>();
                         }
-                        media.setDate(date);
-                        media.setDuration(duration);
-                        mediaList.add(media);
+                        return medias;
                     }
+                    return null;
                 } finally {
                     FileUtils.close(cursor);
                 }
-                return mediaList;
             }
         });
     }
 
+
     @Override
     public Observable<List<Media>> getMedias() {
-        final String sql = String.format("SELECT * FROM %s",
-                PersistenceContract.AlbumEntry.TABLE_NAME);
+        final String[] projection = {
+                PersistenceContract.AlbumEntry.DATA
+        };
+        final String sql = String.format("SELECT %s FROM %s WHERE %s=?",
+                TextUtils.join(",", projection),
+                PersistenceContract.AlbumEntry.TABLE_NAME,
+                PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         return Observable.fromCallable(new Callable<List<Media>>() {
             @Override
             public List<Media> call() throws Exception {
-                Cursor cursor = db.rawQuery(sql, new String[]{});
-                List<Media> mediaList = new ArrayList<>();
+                Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_BOTH)});
                 try {
-                    while (cursor != null && cursor.moveToNext()) {
-                        Media media = new Media();
-                        String id = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry._ID));
-                        String path = cursor.getString(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.MEDIA_PATH));
-                        String location = cursor.getString(cursor.getColumnIndex(
-                                PersistenceContract.AlbumEntry.LOCATION));
-                        int mediaType = cursor.getInt(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.MEDIA_TYPE));
-                        int date = cursor.getInt(cursor.getColumnIndexOrThrow(
-                                PersistenceContract.AlbumEntry.DATE));
-                        if (mediaType == Media.TYPE_VIDEO) {
-                            int duration = cursor.getInt(cursor.getColumnIndex(
-                                    PersistenceContract.AlbumEntry.DURATION));
-                            media.setDuration(duration);
+                    if (cursor != null && cursor.moveToNext()) {
+                        String data = cursor.getString(cursor.getColumnIndexOrThrow(
+                                PersistenceContract.AlbumEntry.DATA));
+                        List<Media> medias = new Gson().fromJson(data,
+                                new TypeToken<List<Media>>(){}.getType());
+                        if (medias == null) {
+                            return new ArrayList<>();
                         }
-                        media.setId(id);
-                        media.setPath(path);
-                        if (!TextUtils.isEmpty(location)) {
-                            String[] temp = location.split(",");
-                            float longitude = Float.valueOf(temp[0]);
-                            float latitude = Float.valueOf(temp[1]);
-                            media.setLongitude(longitude);
-                            media.setLatitude(latitude);
-                        }
-                        media.setDate(date);
-                        media.setMediaType(mediaType);
-                        mediaList.add(media);
+                        return medias;
                     }
+                    return null;
                 } finally {
                     FileUtils.close(cursor);
                 }
-                return mediaList;
             }
         });
     }
 
     @Override
-    public void save(@NonNull List<Media> medias) {
+    public void saveMedias(@NonNull final List<Media> medias) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        Observable.fromCallable(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                Gson gson = new Gson();
+                ContentValues values = new ContentValues();
+                values.put(PersistenceContract.AlbumEntry._ID, 2);
+                values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_BOTH);
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
+                        SQLiteDatabase.CONFLICT_REPLACE);
+                return null;
+            }
+        }).subscribeOn(Schedulers.io()).subscribe();
+    }
 
+    @Override
+    public void saveImages(@NonNull final List<Media> medias) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        Observable.fromCallable(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                Gson gson = new Gson();
+                ContentValues values = new ContentValues();
+                values.put(PersistenceContract.AlbumEntry._ID, 0);
+                values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_IMAGE);
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
+                        SQLiteDatabase.CONFLICT_REPLACE);
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void saveVideos(@NonNull final List<Media> medias) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        Observable.fromCallable(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                Gson gson = new Gson();
+                ContentValues values = new ContentValues();
+                values.put(PersistenceContract.AlbumEntry._ID, 1);
+                values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_VIDEO);
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
+                        SQLiteDatabase.CONFLICT_REPLACE);
+                return null;
+            }
+        });
     }
 }

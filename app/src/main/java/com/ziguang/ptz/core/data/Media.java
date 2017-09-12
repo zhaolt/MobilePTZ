@@ -13,6 +13,8 @@ public class Media implements Span, Parcelable {
 
     public static final int TYPE_IMAGE = 1;
 
+    public static final int TYPE_BOTH = 3;
+
     public Media() {}
 
     private String id;

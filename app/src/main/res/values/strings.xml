@@ -17,6 +17,7 @@
     <string name="permission_recording_audio">录音权限</string>
     <string name="permission_recording_mic">麦克风</string>
     <string name="title_back">返回</string>
+    <string name="album">图库</string>
 
     <!-- camera -->
 </resources>
