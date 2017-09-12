@@ -19,19 +19,19 @@ import com.ziguang.ptz.R;
 public class TitleBar extends RelativeLayout {
 
     private static final int DISPLAY_NO_TITLE = 2;
-    private static final int DISPLAY_NO_BACK = 4;
+    private static final int DISPLAY_NO_BACK_WITH_TEXT = 4;
     private static final int DISPLAY_NO_ACTION_IMAGE = 8;
-    private static final int DISPLAY_NO_INDICATOR = 16;
-    private static final int DISPLAY_NO_ACTION_TEXT = 32;
-    private static final int DISPLAY_NO_BACK_IMAGE = 64;
+    private static final int DISPLAY_NO_ACTION_TEXT = 16;
+    private static final int DISPLAY_NO_BACK_IMAGE = 32;
 
-    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_TEXT = DISPLAY_NO_INDICATOR
-            | DISPLAY_NO_ACTION_IMAGE
+    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_TEXT = DISPLAY_NO_ACTION_IMAGE
             | DISPLAY_NO_BACK_IMAGE;
 
-    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_IMAGE = DISPLAY_NO_INDICATOR
-            | DISPLAY_NO_ACTION_IMAGE
-            | DISPLAY_NO_BACK;
+    public static final int DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_IMAGE =  DISPLAY_NO_ACTION_IMAGE
+            | DISPLAY_NO_BACK_WITH_TEXT;
+
+    public static final int DISPLAY_STYLE_ACTION_ONLY_BACK_IMAGE = DISPLAY_NO_ACTION_IMAGE
+            | DISPLAY_NO_BACK_WITH_TEXT;
 
     private View mView;
 
@@ -80,7 +80,7 @@ public class TitleBar extends RelativeLayout {
         if ((mode & DISPLAY_NO_ACTION_TEXT) == DISPLAY_NO_ACTION_TEXT) {
             mRightText.setVisibility(GONE);
         }
-        if ((mode & DISPLAY_NO_BACK) == DISPLAY_NO_BACK) {
+        if ((mode & DISPLAY_NO_BACK_WITH_TEXT) == DISPLAY_NO_BACK_WITH_TEXT) {
             mBackText.setVisibility(GONE);
         }
         if ((mode & DISPLAY_NO_BACK_IMAGE) == DISPLAY_NO_BACK_IMAGE) {

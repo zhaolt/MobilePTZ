@@ -2,8 +2,6 @@ package com.ziguang.ptz.core.data;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
 import rx.Observable;
 
 /**
@@ -12,15 +10,15 @@ import rx.Observable;
 
 public interface MediaDataSource {
 
-    Observable<List<Media>> getImages();
+    Observable<Directory> getImages();
 
-    Observable<List<Media>> getVideos();
+    Observable<Directory> getVideos();
 
-    Observable<List<Media>> getMedias();
+    Observable<Directory> getMedias();
 
-    void saveMedias(@NonNull List<Media> medias);
+    void saveMedias(@NonNull Directory directory);
 
-    void saveImages(@NonNull List<Media> medias);
+    void saveImages(@NonNull Directory directory);
 
-    void saveVideos(@NonNull List<Media> medias);
+    void saveVideos(@NonNull Directory directory);
 }

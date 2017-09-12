@@ -2,9 +2,6 @@ package com.ziguang.ptz.core.data;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -38,65 +35,65 @@ public class MediaRepository implements MediaDataSource {
     }
 
     @Override
-    public Observable<List<Media>> getImages() {
-        Observable<List<Media>> local = mLocalDataSource.getImages();
-        Observable<List<Media>> system = mSystemDataSource.getImages()
-                .doOnNext(new Action1<List<Media>>() {
+    public Observable<Directory> getImages() {
+        Observable<Directory> local = mLocalDataSource.getImages();
+        Observable<Directory> system = mSystemDataSource.getImages()
+                .doOnNext(new Action1<Directory>() {
                     @Override
-                    public void call(List<Media> medias) {
-                        saveImages(medias);
+                    public void call(Directory directory) {
+                        saveImages(directory);
                     }
                 });
         return Observable.concat(local, system);
     }
 
     @Override
-    public Observable<List<Media>> getVideos() {
-        Observable<List<Media>> local = mLocalDataSource.getVideos();
-        Observable<List<Media>> system = mSystemDataSource.getVideos()
-                .doOnNext(new Action1<List<Media>>() {
+    public Observable<Directory> getVideos() {
+        Observable<Directory> local = mLocalDataSource.getVideos();
+        Observable<Directory> system = mSystemDataSource.getVideos()
+                .doOnNext(new Action1<Directory>() {
                     @Override
-                    public void call(List<Media> medias) {
-                        saveVideos(medias);
+                    public void call(Directory directory) {
+                        saveVideos(directory);
                     }
                 });
         return Observable.concat(local, system);
     }
 
     @Override
-    public Observable<List<Media>> getMedias() {
-        Observable<List<Media>> local = mLocalDataSource.getMedias();
-        Observable<List<Media>> system = mSystemDataSource.getMedias()
-                .doOnNext(new Action1<List<Media>>() {
+    public Observable<Directory> getMedias() {
+        Observable<Directory> local = mLocalDataSource.getMedias();
+        Observable<Directory> system = mSystemDataSource.getMedias()
+                .doOnNext(new Action1<Directory>() {
                     @Override
-                    public void call(List<Media> medias) {
-                        saveMedias(medias);
+                    public void call(Directory directory) {
+                        saveMedias(directory);
                     }
                 });
         return Observable.concat(local, system);
     }
 
     @Override
-    public void saveMedias(@NonNull List<Media> medias) {
-        if (medias == null) {
-            medias = new ArrayList<>();
+    public void saveMedias(@NonNull Directory directory) {
+        if (directory == null) {
+            directory = new Directory();
         }
-        mLocalDataSource.saveMedias(medias);
+        mLocalDataSource.saveMedias(directory);
     }
 
     @Override
-    public void saveImages(@NonNull List<Media> medias) {
-        if (null == medias) {
-            medias = new ArrayList<>();
+    public void saveImages(@NonNull Directory directory) {
+        if (null == directory) {
+            directory = new Directory();
         }
-        mLocalDataSource.saveImages(medias);
+        mLocalDataSource.saveImages(directory);
     }
 
     @Override
-    public void saveVideos(@NonNull List<Media> medias) {
-        if (null == medias) {
-            medias = new ArrayList<>();
+    public void saveVideos(@NonNull Directory directory) {
+        if (null == directory) {
+            directory = new Directory();
         }
-        mLocalDataSource.saveVideos(medias);
+        mLocalDataSource.saveVideos(directory);
     }
 }

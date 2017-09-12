@@ -12,8 +12,12 @@ import com.ziguang.ptz.App;
 import com.ziguang.ptz.utils.FileUtils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -35,12 +39,24 @@ public class MediaSystemDataSource implements MediaDataSource {
         mRetriever = new MediaMetadataRetriever();
     }
 
-    public MediaSystemDataSource getInstance() {
+    public static MediaSystemDataSource getInstance() {
         return SingleTon.INSTANCE;
     }
 
     @Override
-    public Observable<List<Media>> getImages() {
+    public Observable<Directory> getImages() {
+        return rawQueryImages().map(new Func1<List<Media>, Directory>() {
+            @Override
+            public Directory call(List<Media> medias) {
+                Directory directory = new Directory();
+                addToAlbums(medias, directory);
+                return directory;
+            }
+        });
+    }
+
+    @NonNull
+    private Observable<List<Media>> rawQueryImages() {
         final String[] imageProjection = {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATA,
@@ -100,7 +116,19 @@ public class MediaSystemDataSource implements MediaDataSource {
     }
 
     @Override
-    public Observable<List<Media>> getVideos() {
+    public Observable<Directory> getVideos() {
+        return rawQueryVideos().map(new Func1<List<Media>, Directory>() {
+            @Override
+            public Directory call(List<Media> medias) {
+                Directory directory = new Directory();
+                addToAlbums(medias, directory);
+                return directory;
+            }
+        });
+    }
+
+    @NonNull
+    private Observable<List<Media>> rawQueryVideos() {
         final String[] videoProjection = {
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.DATA,
@@ -163,11 +191,31 @@ public class MediaSystemDataSource implements MediaDataSource {
     }
 
     @Override
-    public Observable<List<Media>> getMedias() {
-        return rawQuery();
+    public Observable<Directory> getMedias() {
+        return rawQueryBoth().map(new Func1<List<Media>, Directory>() {
+            @Override
+            public Directory call(List<Media> medias) {
+                Directory directory = new Directory();
+                addToAlbums(medias, directory);
+                return directory;
+            }
+        });
     }
 
-    private Observable<List<Media>> rawQuery() {
+    private void addToAlbums(List<Media> medias, Directory directory) {
+        Map<String, List<Media>> imagesAndVideos = directory.getMedias();
+        for (Media media : medias) {
+            if (!imagesAndVideos.containsKey(getDate(media.getDate()))) {
+                List<Media> group = new ArrayList<>();
+                group.add(media);
+                imagesAndVideos.put(getDate(media.getDate()), group);
+            } else {
+                imagesAndVideos.get(getDate(media.getDate())).add(media);
+            }
+        }
+    }
+
+    private Observable<List<Media>> rawQueryBoth() {
         final String[] imagesProjection = {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATA,
@@ -331,5 +379,11 @@ public class MediaSystemDataSource implements MediaDataSource {
             }
         }
         return true;
+    }
+
+    private String getDate(long dateAdded) {
+        Date date = new Date(dateAdded * 1000L);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return format.format(date);
     }
 }

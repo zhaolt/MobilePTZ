@@ -13,7 +13,6 @@ import com.ziguang.ptz.core.database.DatabaseHelper;
 import com.ziguang.ptz.core.database.PersistenceContract;
 import com.ziguang.ptz.utils.FileUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -41,7 +40,7 @@ public class MediaLocalDataSource implements MediaDataSource {
     }
 
     @Override
-    public Observable<List<Media>> getImages() {
+    public Observable<Directory> getImages() {
         final String[] projection = {
                 PersistenceContract.AlbumEntry.DATA
         };
@@ -50,20 +49,20 @@ public class MediaLocalDataSource implements MediaDataSource {
                 PersistenceContract.AlbumEntry.TABLE_NAME,
                 PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        return Observable.fromCallable(new Callable<List<Media>>() {
+        return Observable.fromCallable(new Callable<Directory>() {
             @Override
-            public List<Media> call() throws Exception {
+            public Directory call() throws Exception {
                 Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_IMAGE)});
                 try {
                     if (cursor != null && cursor.moveToNext()) {
                         String data = cursor.getString(cursor.getColumnIndexOrThrow(
                                 PersistenceContract.AlbumEntry.DATA));
-                        List<Media> medias = new Gson().fromJson(data,
+                        Directory directory = new Gson().fromJson(data,
                                 new TypeToken<List<Media>>(){}.getType());
-                        if (medias == null) {
-                            return new ArrayList<>();
+                        if (directory == null) {
+                            return new Directory();
                         }
-                        return medias;
+                        return directory;
                     }
                     return null;
                 } finally {
@@ -74,7 +73,7 @@ public class MediaLocalDataSource implements MediaDataSource {
     }
 
     @Override
-    public Observable<List<Media>> getVideos() {
+    public Observable<Directory> getVideos() {
         final String[] projection = {
                 PersistenceContract.AlbumEntry.DATA
         };
@@ -83,20 +82,20 @@ public class MediaLocalDataSource implements MediaDataSource {
                 PersistenceContract.AlbumEntry.TABLE_NAME,
                 PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        return Observable.fromCallable(new Callable<List<Media>>() {
+        return Observable.fromCallable(new Callable<Directory>() {
             @Override
-            public List<Media> call() throws Exception {
+            public Directory call() throws Exception {
                 Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_VIDEO)});
                 try {
                     if (cursor != null && cursor.moveToNext()) {
                         String data = cursor.getString(cursor.getColumnIndexOrThrow(
                                 PersistenceContract.AlbumEntry.DATA));
-                        List<Media> medias = new Gson().fromJson(data,
+                        Directory directory = new Gson().fromJson(data,
                                 new TypeToken<List<Media>>(){}.getType());
-                        if (medias == null) {
-                            return new ArrayList<>();
+                        if (directory == null) {
+                            return new Directory();
                         }
-                        return medias;
+                        return directory;
                     }
                     return null;
                 } finally {
@@ -108,7 +107,7 @@ public class MediaLocalDataSource implements MediaDataSource {
 
 
     @Override
-    public Observable<List<Media>> getMedias() {
+    public Observable<Directory> getMedias() {
         final String[] projection = {
                 PersistenceContract.AlbumEntry.DATA
         };
@@ -117,20 +116,20 @@ public class MediaLocalDataSource implements MediaDataSource {
                 PersistenceContract.AlbumEntry.TABLE_NAME,
                 PersistenceContract.AlbumEntry.MEDIA_TYPE);
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-        return Observable.fromCallable(new Callable<List<Media>>() {
+        return Observable.fromCallable(new Callable<Directory>() {
             @Override
-            public List<Media> call() throws Exception {
+            public Directory call() throws Exception {
                 Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(Media.TYPE_BOTH)});
                 try {
                     if (cursor != null && cursor.moveToNext()) {
                         String data = cursor.getString(cursor.getColumnIndexOrThrow(
                                 PersistenceContract.AlbumEntry.DATA));
-                        List<Media> medias = new Gson().fromJson(data,
+                        Directory directory = new Gson().fromJson(data,
                                 new TypeToken<List<Media>>(){}.getType());
-                        if (medias == null) {
-                            return new ArrayList<>();
+                        if (directory == null) {
+                            return new Directory();
                         }
-                        return medias;
+                        return directory;
                     }
                     return null;
                 } finally {
@@ -141,7 +140,7 @@ public class MediaLocalDataSource implements MediaDataSource {
     }
 
     @Override
-    public void saveMedias(@NonNull final List<Media> medias) {
+    public void saveMedias(@NonNull final Directory directory) {
         final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         Observable.fromCallable(new Callable<Void>() {
             @Override
@@ -150,7 +149,7 @@ public class MediaLocalDataSource implements MediaDataSource {
                 ContentValues values = new ContentValues();
                 values.put(PersistenceContract.AlbumEntry._ID, 2);
                 values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_BOTH);
-                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(directory));
                 db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
                         SQLiteDatabase.CONFLICT_REPLACE);
                 return null;
@@ -159,7 +158,7 @@ public class MediaLocalDataSource implements MediaDataSource {
     }
 
     @Override
-    public void saveImages(@NonNull final List<Media> medias) {
+    public void saveImages(@NonNull final Directory directory) {
         final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         Observable.fromCallable(new Callable<Void>() {
             @Override
@@ -168,7 +167,7 @@ public class MediaLocalDataSource implements MediaDataSource {
                 ContentValues values = new ContentValues();
                 values.put(PersistenceContract.AlbumEntry._ID, 0);
                 values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_IMAGE);
-                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(directory));
                 db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
                         SQLiteDatabase.CONFLICT_REPLACE);
                 return null;
@@ -177,7 +176,7 @@ public class MediaLocalDataSource implements MediaDataSource {
     }
 
     @Override
-    public void saveVideos(@NonNull final List<Media> medias) {
+    public void saveVideos(@NonNull final Directory directory) {
         final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         Observable.fromCallable(new Callable<Void>() {
             @Override
@@ -186,7 +185,7 @@ public class MediaLocalDataSource implements MediaDataSource {
                 ContentValues values = new ContentValues();
                 values.put(PersistenceContract.AlbumEntry._ID, 1);
                 values.put(PersistenceContract.AlbumEntry.MEDIA_TYPE, Media.TYPE_VIDEO);
-                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(medias));
+                values.put(PersistenceContract.AlbumEntry.DATA, gson.toJson(directory));
                 db.insertWithOnConflict(PersistenceContract.AlbumEntry.TABLE_NAME, null, values,
                         SQLiteDatabase.CONFLICT_REPLACE);
                 return null;
