@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
+        android:id="@+id/item_video_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_name="视频分辨率"
+        app:right_icon_visibility="gone"/>
+    <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
+        android:id="@+id/item_beauty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_name="美颜效果"
+        app:right_icon_visibility="gone"/>
+    <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
+        android:id="@+id/item_white_blance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_name="白平衡"
+        app:right_icon_visibility="visible"/>
+    <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
+        android:id="@+id/item_flash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_name="闪光灯"
+        app:right_icon_visibility="visible"/>
+    <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
+        android:id="@+id/item_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_name="网格"
+        app:right_icon_visibility="visible"/>
+</LinearLayout>

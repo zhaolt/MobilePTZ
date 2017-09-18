@@ -5,25 +5,34 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
+import com.ziguang.ptz.utils.UIUtils;
 
 /**
  * Created by zhaoliangtai on 2017/8/18.
  */
 
-public class CameraActivity extends FullScreenActivity {
+public class CameraActivity extends FullScreenActivity implements View.OnClickListener {
 
     private static final String CAMERA_LENS_TAG = "cameraLens";
 
@@ -32,12 +41,43 @@ public class CameraActivity extends FullScreenActivity {
 
     private ImageButton mCameraSetting;
 
+    private View mRightMenuBg;
+
+    private LinearLayout mFastSettingMenuLayout;
+
+    private TextView mFastSettingMenuTtile;
+
+    private boolean isCameraFastMenuShow;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_camera);
         requestPermissions();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (isCameraFastMenuShow) {
+            if (!checkMenuTouched(ev) || checkIconTouched(mCameraSetting, ev)) {
+                showCameraFastSettingMenu(false);
+                mCameraSetting.setSelected(false);
+            }
+            return true;
+        } else {
+            return super.dispatchTouchEvent(ev);
+        }
+    }
+
+    private boolean checkMenuTouched(MotionEvent ev) {
+        float x = mFastSettingMenuLayout.getX() - ev.getX();
+        return x <= 0;
+    }
+
+    private boolean checkIconTouched(View view, MotionEvent ev) {
+        if (view == null) return false;
+        return UIUtils.isPointInsideView(ev.getX(), ev.getY(), view);
     }
 
 
@@ -64,17 +104,11 @@ public class CameraActivity extends FullScreenActivity {
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment,
                 R.id.layout_fragment, CAMERA_LENS_TAG);
         mCameraSetting = (ImageButton) findViewById(R.id.iv_camera_setting);
+        mCameraSetting.setOnClickListener(this);
+        mRightMenuBg = findViewById(R.id.right_menu_bg);
+        mFastSettingMenuLayout = (LinearLayout) findViewById(R.id.menu_fast_setting);
+        mFastSettingMenuTtile = (TextView) findViewById(R.id.tv_fast_setting_title);
         final PreviewDisplayFragment finalFragment = fragment;
-        mCameraSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                CameraHelper.getInstance().takePicture(getWindowManager().getDefaultDisplay().getRotation());
-                int rotation = getWindowManager().getDefaultDisplay().getRotation();
-//                CameraHelper.getInstance().startRecordingVideo(finalFragment.getSurfaceTexture(), rotation);
-                CameraHelper.getInstance().chooseVideoMode(finalFragment.getSurfaceTexture(), rotation);
-            }
-        });
-
         RadioGroup whiteBalance = (RadioGroup) findViewById(R.id.white_balance);
         whiteBalance.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -193,4 +227,53 @@ public class CameraActivity extends FullScreenActivity {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_camera_setting:
+//                Intent intent = new Intent(this, FastSettingDialogActivity.class);
+//                startActivity(intent);
+                mCameraSetting.setSelected(!mCameraSetting.isSelected());
+                showCameraFastSettingMenu(mCameraSetting.isSelected());
+                break;
+        }
+    }
+
+    private void showCameraFastSettingMenu(boolean isOpen) {
+        if (isOpen) {
+            mRightMenuBg.setVisibility(View.VISIBLE);
+            mFastSettingMenuLayout.setVisibility(View.VISIBLE);
+            changeToCameraFastSettingFragment(getSupportFragmentManager());
+            isCameraFastMenuShow = true;
+        } else {
+            mRightMenuBg.setVisibility(View.GONE);
+            mFastSettingMenuLayout.setVisibility(View.GONE);
+            removeFragmentByTag(getSupportFragmentManager(),
+                    CameraFastSettingFragment.class.toString());
+            isCameraFastMenuShow = false;
+        }
+    }
+
+    private void changeToCameraFastSettingFragment(FragmentManager fm) {
+        FragmentTransaction ft = fm.beginTransaction();
+        changeFragment(ft, new CameraFastSettingFragment());
+    }
+
+    public void changeToFragmentWithAnim(FragmentManager fm, Fragment f) {
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+        changeFragment(ft, f);
+    }
+
+    private void changeFragment(FragmentTransaction ft, Fragment f) {
+        ft.replace(R.id.frame_fast_setting, f, f.getClass().toString());
+        ft.commit();
+    }
+
+    private void removeFragmentByTag(FragmentManager fm, String tag) {
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment fragment = fm.findFragmentByTag(tag);
+        if (fragment == null) return;
+        ft.remove(fragment);
+    }
 }

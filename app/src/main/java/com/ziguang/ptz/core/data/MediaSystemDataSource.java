@@ -202,6 +202,21 @@ public class MediaSystemDataSource implements MediaDataSource {
         });
     }
 
+    @Override
+    public void saveMedias(@NonNull Directory directory) {
+
+    }
+
+    @Override
+    public void saveImages(@NonNull Directory directory) {
+
+    }
+
+    @Override
+    public void saveVideos(@NonNull Directory directory) {
+
+    }
+
     private void addToAlbums(List<Media> medias, Directory directory) {
         Map<String, List<Media>> imagesAndVideos = directory.getMedias();
         for (Media media : medias) {
@@ -337,20 +352,6 @@ public class MediaSystemDataSource implements MediaDataSource {
         });
     }
 
-    @Override
-    public void saveMedias(@NonNull List<Media> medias) {
-        // do nothing
-    }
-
-    @Override
-    public void saveImages(@NonNull List<Media> medias) {
-        // do nothing
-    }
-
-    @Override
-    public void saveVideos(@NonNull List<Media> medias) {
-        // do nothing
-    }
 
     private String getParentDir(String path) {
         File file = new File(path);

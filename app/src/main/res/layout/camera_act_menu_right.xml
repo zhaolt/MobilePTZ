@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="@dimen/camera_act_menu_width"
+              android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:weightSum="4">
@@ -8,34 +8,34 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:background="@null"
-        android:layout_gravity="center"
-        android:src="@mipmap/lp_quicksetting_home"/>
+        android:src="@drawable/icon_home_selector"/>
 
     <ImageButton
         android:id="@+id/iv_camera_setting"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:background="@null"
-        android:layout_gravity="center"
-        android:src="@drawable/camera_setting_selector"/>
+        android:src="@drawable/camera_fast_setting_selector"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:background="@null"
-        android:layout_gravity="center"
-        android:src="@drawable/gimbal_setting_selector"/>
+        android:src="@drawable/gimbal_fast_setting_selector"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:background="@null"
-        android:layout_gravity="center"
-        android:src="@mipmap/lp_quicksetting_setting"/>
+        android:src="@drawable/icon_setting_selector"/>
 
 </LinearLayout>

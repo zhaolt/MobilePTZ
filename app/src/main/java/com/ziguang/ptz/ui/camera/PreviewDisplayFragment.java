@@ -99,7 +99,6 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
         isFocusing = true;
         float x = (float) point.x / (float) width;
         float y = (float) point.y / (float) height;
-        Log.i("touch", "point x: " + point.x + ", y: " + point.y + ", width: " + width + ", height: " + height);
         mFocusImageView.startFocus(point);
         CameraHelper.getInstance().areaFocus(x, y, 1.0f, new Camera.AutoFocusCallback() {
             @Override

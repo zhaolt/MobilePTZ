@@ -11,4 +11,14 @@
         <attr name="title_text" format="string|reference"/>
         <attr name="bg_color" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="FastSettingArrowsItemView">
+        <attr name="item_name" format="string|reference"/>
+        <attr name="right_icon" format="reference"/>
+        <attr name="right_icon_visibility" format="enum">
+            <enum name="visible" value="0"/>
+            <enum name="gone" value="1"/>
+            <enum name="invisible" value="2"/>
+        </attr>
+    </declare-styleable>
 </resources>

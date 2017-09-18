@@ -2,8 +2,11 @@ package com.ziguang.ptz;
 
 import android.app.Application;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.ziguang.ptz.rx.NoActionSubscriber;
+import com.ziguang.ptz.utils.DeviceInfoUtils;
 import com.ziguang.ptz.utils.FileUtils;
+import com.ziguang.ptz.utils.ImagePipelineConfigFactory;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -22,6 +25,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
+        DeviceInfoUtils.init(this);
+        // 配置Fresco
+        Fresco.initialize(this, ImagePipelineConfigFactory.getImagePipelineConfig(this));
         createDirs()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
