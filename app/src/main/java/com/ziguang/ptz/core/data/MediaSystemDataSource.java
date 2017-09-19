@@ -7,6 +7,7 @@ import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.ziguang.ptz.App;
 import com.ziguang.ptz.utils.FileUtils;
@@ -28,6 +29,8 @@ import rx.functions.Func1;
  */
 
 public class MediaSystemDataSource implements MediaDataSource {
+
+    private static final String TAG = MediaSystemDataSource.class.getSimpleName();
 
     private static class SingleTon {
         public static final MediaSystemDataSource INSTANCE  = new MediaSystemDataSource();
@@ -98,7 +101,7 @@ public class MediaSystemDataSource implements MediaDataSource {
                         continue;
                     }
                     String parentPath = getParentDir(path);
-                    if (!parentPath.equals(FileUtils.PHOTO_DIR_PATH)) {
+                    if (parentPath == null || !parentPath.equals(FileUtils.PHOTO_DIR_PATH)) {
                         continue;
                     }
                     Media media = new Media();
@@ -172,7 +175,7 @@ public class MediaSystemDataSource implements MediaDataSource {
                         continue;
                     }
                     String parentPath = getParentDir(path);
-                    if (!parentPath.equals(FileUtils.VIDEO_DIR_PATH)) {
+                    if (parentPath == null || !parentPath.equals(FileUtils.VIDEO_DIR_PATH)) {
                         continue;
                     }
                     Media media = new Media();
@@ -299,7 +302,7 @@ public class MediaSystemDataSource implements MediaDataSource {
                                 continue;
                             }
                             parentPath = getParentDir(path);
-                            if (!parentPath.equals(FileUtils.PHOTO_DIR_PATH)) {
+                            if (parentPath == null || !parentPath.equals(FileUtils.PHOTO_DIR_PATH)) {
                                 continue;
                             }
                             media = new Media();
@@ -329,8 +332,10 @@ public class MediaSystemDataSource implements MediaDataSource {
                             if (ignoreSpecificTypeFile(path)) {
                                 continue;
                             }
+                            Log.w(TAG, "path: " + path);
                             parentPath = getParentDir(path);
-                            if (!parentPath.equals(FileUtils.VIDEO_DIR_PATH)) {
+                            Log.w(TAG, "parentPath: " + parentPath);
+                            if (parentPath == null || !parentPath.equals(FileUtils.VIDEO_DIR_PATH)) {
                                 continue;
                             }
                             media = new Media();
@@ -358,7 +363,7 @@ public class MediaSystemDataSource implements MediaDataSource {
         if (!file.exists()) {
             return null;
         }
-        return file.getParent();
+        return file.getParent() + File.separator;
     }
 
     /**

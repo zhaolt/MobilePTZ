@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -12,8 +13,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.ui.album.AlbumActivity;
 import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
@@ -48,6 +48,16 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private TextView mFastSettingMenuTtile;
 
     private boolean isCameraFastMenuShow;
+
+    private ImageButton mTakeModeBtn;
+
+    private ImageButton mShutterBtn;
+
+    private ImageButton mCameraSwitchBtn;
+
+    private ImageButton mAlbumBtn;
+
+    private PreviewDisplayFragment mPreviewDisplayFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,45 +107,26 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     }
 
     private void loadUI() {
-        PreviewDisplayFragment fragment = (PreviewDisplayFragment) getSupportFragmentManager()
+        mPreviewDisplayFragment = (PreviewDisplayFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.layout_fragment);
-        if (fragment == null) {
-            fragment = new PreviewDisplayFragment();
+        if (mPreviewDisplayFragment == null) {
+            mPreviewDisplayFragment = new PreviewDisplayFragment();
         }
-        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment,
+        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), mPreviewDisplayFragment,
                 R.id.layout_fragment, CAMERA_LENS_TAG);
         mCameraSetting = (ImageButton) findViewById(R.id.iv_camera_setting);
-        mCameraSetting.setOnClickListener(this);
         mRightMenuBg = findViewById(R.id.right_menu_bg);
         mFastSettingMenuLayout = (LinearLayout) findViewById(R.id.menu_fast_setting);
         mFastSettingMenuTtile = (TextView) findViewById(R.id.tv_fast_setting_title);
-        final PreviewDisplayFragment finalFragment = fragment;
-        RadioGroup whiteBalance = (RadioGroup) findViewById(R.id.white_balance);
-        whiteBalance.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                switch (checkedId) {
-                    case R.id.white_balance_auto:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-                        break;
-                    case R.id.white_balance_daylight:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_DAYLIGHT);
-                        break;
-                    case R.id.white_balance_fluorescent:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_FLUORESCENT);
-                        break;
-                    case R.id.white_balance_incandescent:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
-                        break;
-                    case R.id.white_balance_cloudy_daylight:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_CLOUDY_DAYLIGHT);
-                        break;
-                    default:
-                        CameraHelper.getInstance().setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-                        break;
-                }
-            }
-        });
+        mTakeModeBtn = (ImageButton) findViewById(R.id.btn_take_mode);
+        mShutterBtn = (ImageButton) findViewById(R.id.btn_shutter);
+        mCameraSwitchBtn = (ImageButton) findViewById(R.id.btn_camera_switch);
+        mAlbumBtn = (ImageButton) findViewById(R.id.btn_album);
+        mCameraSetting.setOnClickListener(this);
+        mTakeModeBtn.setOnClickListener(this);
+        mShutterBtn.setOnClickListener(this);
+        mCameraSwitchBtn.setOnClickListener(this);
+        mAlbumBtn.setOnClickListener(this);
         RadioGroup flashGroup = (RadioGroup) findViewById(R.id.flash_group);
         flashGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -157,15 +148,6 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
                         CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                         break;
                 }
-            }
-        });
-
-        CheckBox frontCamera = (CheckBox) findViewById(R.id.checkbox);
-        frontCamera.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                int rotation = getWindowManager().getDefaultDisplay().getRotation();
-                CameraHelper.getInstance().switchCamera(finalFragment.getSurfaceTexture(), rotation);
             }
         });
 
@@ -234,6 +216,19 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
             case R.id.iv_camera_setting:
                 mCameraSetting.setSelected(!mCameraSetting.isSelected());
                 showCameraFastSettingMenu(mCameraSetting.isSelected());
+                break;
+            case R.id.btn_shutter:
+                break;
+            case R.id.btn_take_mode:
+                break;
+            case R.id.btn_camera_switch:
+                int rotation = getWindowManager().getDefaultDisplay().getRotation();
+                CameraHelper.getInstance().switchCamera(mPreviewDisplayFragment.getSurfaceTexture(),
+                        rotation);
+                break;
+            case R.id.btn_album:
+                Intent intent = new Intent(this, AlbumActivity.class);
+                startActivity(intent);
                 break;
         }
     }

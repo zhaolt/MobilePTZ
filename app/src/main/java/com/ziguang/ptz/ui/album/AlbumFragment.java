@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AlbumFragment extends ViewPagerFragment {
 
+    private static final String TAG = AlbumFragment.class.getSimpleName();
+
     private int mContentType;
 
     private MediaRepository mMediaRepository;
@@ -49,6 +52,8 @@ public class AlbumFragment extends ViewPagerFragment {
 
     private CompositeSubscription mCompositeSubscription;
 
+    private PhotosAdapter mPhotosAdapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +65,10 @@ public class AlbumFragment extends ViewPagerFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_album, container);
+        rootView = inflater.inflate(R.layout.fragment_album, null);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_layout);
+        initGridView();
         return rootView;
     }
 
@@ -72,7 +78,8 @@ public class AlbumFragment extends ViewPagerFragment {
         mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(gridPadding, 3));
         mRecyclerView.setPadding(offsetPadding, offsetPadding, offsetPadding, offsetPadding);
         mLayoutManager = new GridLayoutManager(getContext(), 3);
-
+        mPhotosAdapter = new PhotosAdapter(getContext());
+        mRecyclerView.setAdapter(mPhotosAdapter);
     }
 
     public void setContentType(int contentType) {
@@ -83,6 +90,7 @@ public class AlbumFragment extends ViewPagerFragment {
 
     @Override
     public void refresh() {
+        Log.i(TAG, "refresh");
         mRefreshLayout.setRefreshing(true);
         switch (mContentType) {
             case Media.TYPE_BOTH:
@@ -108,12 +116,15 @@ public class AlbumFragment extends ViewPagerFragment {
                 .subscribe(new NCSubscriber<Directory>() {
                     @Override
                     public void doOnNext(Directory directory) {
-
+                        if (null == directory) {
+                            return;
+                        }
+                        showPhotos(directory.getMedias());
                     }
 
                     @Override
                     public void doOnError(Throwable e) {
-
+                        e.printStackTrace();
                     }
                 });
         mCompositeSubscription.add(subscriber);
@@ -127,12 +138,15 @@ public class AlbumFragment extends ViewPagerFragment {
                 .subscribe(new NCSubscriber<Directory>() {
                     @Override
                     public void doOnNext(Directory directory) {
-
+                        if (null == directory) {
+                            return;
+                        }
+                        showPhotos(directory.getMedias());
                     }
 
                     @Override
                     public void doOnError(Throwable e) {
-
+                        e.printStackTrace();
                     }
                 });
         mCompositeSubscription.add(subscription);
@@ -146,12 +160,15 @@ public class AlbumFragment extends ViewPagerFragment {
                 .subscribe(new NCSubscriber<Directory>() {
                     @Override
                     public void doOnNext(Directory directory) {
-
+                        if (null == directory) {
+                            return;
+                        }
+                        showPhotos(directory.getMedias());
                     }
 
                     @Override
                     public void doOnError(Throwable e) {
-
+                        e.printStackTrace();
                     }
                 });
         mCompositeSubscription.add(subscription);
@@ -169,6 +186,7 @@ public class AlbumFragment extends ViewPagerFragment {
             List<Media> values = entry.getValue();
             dataList.addAll(values);
         }
+        mPhotosAdapter.addAll(dataList);
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -176,11 +194,15 @@ public class AlbumFragment extends ViewPagerFragment {
             }
         });
         mRecyclerView.setLayoutManager(mLayoutManager);
+        if (mRefreshLayout.isRefreshing())
+            mRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void stopRefresh() {
+        Log.i(TAG, "stopRefresh");
         mCompositeSubscription.clear();
-        mRefreshLayout.setRefreshing(false);
+        if (mRefreshLayout.isRefreshing())
+            mRefreshLayout.setRefreshing(false);
     }
 }

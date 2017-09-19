@@ -3,6 +3,7 @@ package com.ziguang.ptz.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -10,6 +11,8 @@ import android.view.View;
  */
 
 public abstract class ViewPagerFragment extends Fragment {
+
+    private static final String TAG = ViewPagerFragment.class.getSimpleName();
 
     private boolean hasCreateView;
 
@@ -20,6 +23,7 @@ public abstract class ViewPagerFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        Log.i(TAG, "setUserVisibleHint() isVisibleToUser : " + isVisibleToUser);
         if (rootView == null) {
             return;
         }

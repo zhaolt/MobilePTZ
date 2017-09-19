@@ -10,4 +10,5 @@
     <dimen name="textSize1">12sp</dimen>
     <dimen name="textSize2">14sp</dimen>
     <dimen name="textSize3">16sp</dimen>
+    <dimen name="textSize4">10sp</dimen>
 </resources>

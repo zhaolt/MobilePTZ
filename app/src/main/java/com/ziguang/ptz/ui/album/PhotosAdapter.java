@@ -50,8 +50,8 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
     public PhotosAdapter(Context context) {
+        mContext = context;
         mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 4;
-
     }
 
     @Override
@@ -132,6 +132,15 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return mDataList.size();
     }
 
+
+    public void addAll(List<Span> dataList) {
+        if (dataList == null) {
+            return;
+        }
+        mDataList.clear();
+        mDataList.addAll(dataList);
+        notifyDataSetChanged();
+    }
 
     static class HeadViewHolder extends RecyclerView.ViewHolder {
         TextView head;

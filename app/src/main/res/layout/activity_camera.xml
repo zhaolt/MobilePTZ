@@ -52,49 +52,14 @@
     </LinearLayout>
 
     <include
+        layout="@layout/camera_act_menu_left"/>
+
+    <include
         android:id="@+id/right_menu"
         android:layout_width="@dimen/camera_act_menu_width"
         android:layout_height="match_parent"
         android:layout_gravity="right"
         layout="@layout/camera_act_menu_right"/>
-
-    <RadioGroup
-        android:id="@+id/white_balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="left|top"
-        android:visibility="gone">
-        <RadioButton
-            android:id="@+id/white_balance_auto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="自动"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/white_balance_incandescent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="白炽灯"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/white_balance_cloudy_daylight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="阴天"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/white_balance_fluorescent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="荧光灯"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/white_balance_daylight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="日光"
-            android:textColor="#ffffff"/>
-    </RadioGroup>
 
     <RadioGroup
         android:id="@+id/flash_group"
@@ -134,16 +99,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:src="@mipmap/shutter"
-        android:visibility="gone"/>
-
-    <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="前置摄像头"
-        android:textColor="#ffffff"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
         android:visibility="gone"/>
 
     <RadioGroup

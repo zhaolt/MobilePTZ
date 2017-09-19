@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,6 +25,8 @@ import rx.schedulers.Schedulers;
  */
 
 public class MediaLocalDataSource implements MediaDataSource {
+
+    private static final String TAG = MediaLocalDataSource.class.getSimpleName();
 
     private final DatabaseHelper mDatabaseHelper;
 
@@ -124,8 +127,9 @@ public class MediaLocalDataSource implements MediaDataSource {
                     if (cursor != null && cursor.moveToNext()) {
                         String data = cursor.getString(cursor.getColumnIndexOrThrow(
                                 PersistenceContract.AlbumEntry.DATA));
+                        Log.w(TAG, "query json: " + data);
                         Directory directory = new Gson().fromJson(data,
-                                new TypeToken<List<Media>>(){}.getType());
+                                new TypeToken<Directory>(){}.getType());
                         if (directory == null) {
                             return new Directory();
                         }

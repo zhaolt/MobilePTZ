@@ -12,9 +12,9 @@ import com.ziguang.ptz.BuildConfig;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String INTEGER_TYPE = "INTEGER";
+    private static final String INTEGER_TYPE = " INTEGER";
 
-    private static final String TEXT_TYPE = "TEXT";
+    private static final String TEXT_TYPE = " TEXT";
 
     private static final String COMMA_SEP = ",";
 
