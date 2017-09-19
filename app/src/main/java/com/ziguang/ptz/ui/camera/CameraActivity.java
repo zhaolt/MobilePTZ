@@ -1,13 +1,13 @@
 package com.ziguang.ptz.ui.camera;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -63,8 +63,9 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
             if (!checkMenuTouched(ev) || checkIconTouched(mCameraSetting, ev)) {
                 showCameraFastSettingMenu(false);
                 mCameraSetting.setSelected(false);
+                return true;
             }
-            return true;
+            return super.dispatchTouchEvent(ev);
         } else {
             return super.dispatchTouchEvent(ev);
         }
@@ -231,8 +232,6 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_camera_setting:
-//                Intent intent = new Intent(this, FastSettingDialogActivity.class);
-//                startActivity(intent);
                 mCameraSetting.setSelected(!mCameraSetting.isSelected());
                 showCameraFastSettingMenu(mCameraSetting.isSelected());
                 break;
@@ -243,12 +242,12 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         if (isOpen) {
             mRightMenuBg.setVisibility(View.VISIBLE);
             mFastSettingMenuLayout.setVisibility(View.VISIBLE);
-            changeToCameraFastSettingFragment(getSupportFragmentManager());
+            changeToCameraFastSettingFragment(getFragmentManager());
             isCameraFastMenuShow = true;
         } else {
             mRightMenuBg.setVisibility(View.GONE);
             mFastSettingMenuLayout.setVisibility(View.GONE);
-            removeFragmentByTag(getSupportFragmentManager(),
+            removeFragmentByTag(getFragmentManager(),
                     CameraFastSettingFragment.class.toString());
             isCameraFastMenuShow = false;
         }
@@ -260,6 +259,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     }
 
     public void changeToFragmentWithAnim(FragmentManager fm, Fragment f) {
+
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
         changeFragment(ft, f);

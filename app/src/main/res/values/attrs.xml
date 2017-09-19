@@ -21,4 +21,9 @@
             <enum name="invisible" value="2"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="FastSettingRadioItemView">
+        <attr name="radio_item_name" format="string|reference"/>
+        <attr name="radio_right_icon" format="reference"/>
+    </declare-styleable>
 </resources>

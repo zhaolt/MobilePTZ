@@ -23,4 +23,9 @@
     <string name="album">图库</string>
 
     <!-- camera -->
+    <string name="white_balance_auto">自动</string>
+    <string name="white_balance_incandescent">白炽灯</string>
+    <string name="white_balance_fluorescent">荧光灯</string>
+    <string name="white_balance_daylight">日光</string>
+    <string name="white_balance_cloudy_daylight">阴天</string>
 </resources>

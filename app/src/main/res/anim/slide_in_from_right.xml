@@ -4,6 +4,5 @@
     android:propertyName="translationX"
     android:valueType="floatType"
     android:duration="200"
-    android:valueFrom="230dp" android:valueTo="0dp"
-   />
+    android:valueFrom="230dp" android:valueTo="0dp"/>
 </set>

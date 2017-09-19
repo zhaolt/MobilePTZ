@@ -451,6 +451,14 @@ public class CameraHelper {
                 Math.round(rectF.right), Math.round(rectF.bottom));
     }
 
+    public String getChooseWhiteBalance() {
+        return mParameters.getWhiteBalance();
+    }
+
+    public String getChooseFlashMode() {
+        return mParameters.getFlashMode();
+    }
+
     private int clamp(int x, int min, int max) {
         if (x > max) {
             return max;

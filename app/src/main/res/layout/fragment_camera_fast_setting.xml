@@ -15,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:item_name="美颜效果"
-        app:right_icon_visibility="gone"/>
+        app:right_icon_visibility="gone"
+        android:visibility="gone"/>
     <com.ziguang.ptz.ui.setting.FastSettingArrowsItemView
         android:id="@+id/item_white_blance"
         android:layout_width="match_parent"

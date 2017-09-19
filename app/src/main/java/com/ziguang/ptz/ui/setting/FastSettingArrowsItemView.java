@@ -24,11 +24,13 @@ public class FastSettingArrowsItemView extends RelativeLayout {
 
     private static final int INVISIBLE = 2;
 
-
+    private OnItemClickListener mOnItemClickListener;
 
     private TextView mItemName;
 
     private ImageView mRightIcon;
+
+    private View mRoot;
 
     public FastSettingArrowsItemView(Context context) {
         this(context, null);
@@ -43,7 +45,14 @@ public class FastSettingArrowsItemView extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.layout_common_setting_item, this, true);
         mItemName = (TextView) findViewById(R.id.tv_item_name);
         mRightIcon = (ImageView) findViewById(R.id.iv_right_icon);
-
+        mRoot = findViewById(R.id.root);
+        mRoot.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != mOnItemClickListener)
+                    mOnItemClickListener.onClick(v);
+            }
+        });
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.FastSettingArrowsItemView, 0, 0);
         String itemName = typedArray.getString(R.styleable.FastSettingArrowsItemView_item_name);
@@ -66,11 +75,19 @@ public class FastSettingArrowsItemView extends RelativeLayout {
         typedArray.recycle();
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
+
     public void setRightIcon(Drawable drawable) {
         mRightIcon.setImageDrawable(drawable);
     }
 
     public void setRightIconVisibility(int visibility) {
         mRightIcon.setVisibility(visibility);
+    }
+
+    public interface OnItemClickListener {
+        void onClick(View v);
     }
 }
