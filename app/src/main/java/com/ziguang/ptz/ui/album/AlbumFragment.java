@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -54,6 +55,8 @@ public class AlbumFragment extends ViewPagerFragment {
 
     private PhotosAdapter mPhotosAdapter;
 
+    private int mRotation = -1;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +80,13 @@ public class AlbumFragment extends ViewPagerFragment {
         int gridPadding = UIUtils.dip2px(getContext(), 8);
         mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(gridPadding, 3));
         mRecyclerView.setPadding(offsetPadding, offsetPadding, offsetPadding, offsetPadding);
-        mLayoutManager = new GridLayoutManager(getContext(), 3);
-        mPhotosAdapter = new PhotosAdapter(getContext());
+        mRotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
+        if (mRotation == Surface.ROTATION_90 || mRotation == Surface.ROTATION_270) {
+            mLayoutManager = new GridLayoutManager(getContext(), 6);
+        } else if (mRotation == Surface.ROTATION_0 || mRotation == Surface.ROTATION_180) {
+            mLayoutManager = new GridLayoutManager(getContext(), 3);
+        }
+        mPhotosAdapter = new PhotosAdapter(getContext(), mRotation);
         mRecyclerView.setAdapter(mPhotosAdapter);
     }
 
@@ -190,6 +198,11 @@ public class AlbumFragment extends ViewPagerFragment {
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
+                if (mRotation == Surface.ROTATION_90 || mRotation == Surface.ROTATION_270) {
+                    return dataList.get(position).getSpan() == Span.SPAN_HEAD ? 6 : 1;
+                } else if (mRotation == Surface.ROTATION_0 || mRotation == Surface.ROTATION_180) {
+                    return dataList.get(position).getSpan();
+                }
                 return dataList.get(position).getSpan();
             }
         });

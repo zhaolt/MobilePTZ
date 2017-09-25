@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.Surface;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -49,9 +50,13 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Context mContext;
 
 
-    public PhotosAdapter(Context context) {
+    public PhotosAdapter(Context context, int rotation) {
         mContext = context;
-        mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 4;
+        if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
+            mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 8;
+        } else if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
+            mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 4;
+        }
     }
 
     @Override
