@@ -37,4 +37,17 @@
     <string name="flash_on">打开</string>
     <string name="flash_off">关闭</string>
     <string name="flash_torch">常亮</string>
+    
+    <!-- 网格 -->
+    <string name="camera_grid">网格</string>
+    <string name="grid_off">关闭</string>
+    <string name="grid_lines">网格线</string>
+    <string name="grid_diagonal">网格线与对角线</string>
+    <string name="grid_center_point">中心点</string>
+
+    <!-- 视频分辨率 -->
+    <string name="video_resolution">视频分辨率</string>
+    <string name="video_resolution_1080p">1080P</string>
+    <string name="video_resolution_720p">720P</string>
+    <string name="video_resolution_480p">480P</string>
 </resources>

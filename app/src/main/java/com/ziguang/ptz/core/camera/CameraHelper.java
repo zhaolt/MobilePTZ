@@ -204,6 +204,7 @@ public class CameraHelper {
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         try {
@@ -225,6 +226,7 @@ public class CameraHelper {
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
             setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         }
         mCamera.setDisplayOrientation(ORIENTATIONS.get(rotation));
         mParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
@@ -244,6 +246,7 @@ public class CameraHelper {
     }
 
     public void applyParameters() {
+        if (null == mCamera) return;
         mCamera.setParameters(mParameters);
         mParameters = mCamera.getParameters();
     }

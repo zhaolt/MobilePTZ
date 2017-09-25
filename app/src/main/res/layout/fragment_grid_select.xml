@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/grid_none"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/grid_off"
+        app:radio_right_icon="@mipmap/icon_grid_none"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/grid_lines"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/grid_lines"
+        app:radio_right_icon="@mipmap/icon_grid"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/grid_diagonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/grid_diagonal"
+        app:radio_right_icon="@mipmap/icon_grid_diagonal"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/grid_center_point"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/grid_center_point"
+        app:radio_right_icon="@mipmap/icon_grid_center"/>
+</LinearLayout>

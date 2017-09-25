@@ -28,6 +28,10 @@
     </declare-styleable>
 
     <declare-styleable name="Grid">
-        <attr name="with_diagonal" format="boolean"/>
+        <attr name="grid_mode">
+            <enum name="grid_lines" value="101"/>
+            <enum name="with_diagonal" value="102"/>
+            <enum name="center_point" value="103"/>
+        </attr>
     </declare-styleable>
 </resources>

@@ -78,6 +78,8 @@ public class FlashSelectFragment extends Fragment {
             case Camera.Parameters.FLASH_MODE_TORCH:
                 chooseFlashModeTorch();
                 break;
+            default:
+                break;
         }
     }
 

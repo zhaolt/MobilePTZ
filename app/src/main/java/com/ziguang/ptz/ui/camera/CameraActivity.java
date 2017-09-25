@@ -24,9 +24,15 @@ import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
 import com.ziguang.ptz.ui.album.AlbumActivity;
 import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
+import com.ziguang.ptz.ui.setting.FlashSelectFragment;
+import com.ziguang.ptz.ui.setting.GridSelectFragment;
+import com.ziguang.ptz.ui.setting.VideoResolutionSelectFragment;
+import com.ziguang.ptz.ui.setting.WhiteBalanceFragment;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
+import com.ziguang.ptz.utils.SharedPrefUtils;
 import com.ziguang.ptz.utils.UIUtils;
+import com.ziguang.ptz.widget.Grid;
 
 /**
  * Created by zhaoliangtai on 2017/8/18.
@@ -44,7 +50,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     private LinearLayout mFastSettingMenuLayout;
 
-    private TextView mFastSettingMenuTtile;
+    private TextView mFastSettingMenuTitle;
 
     private boolean isCameraFastMenuShow;
 
@@ -59,6 +65,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private PreviewDisplayFragment mPreviewDisplayFragment;
 
     private ImageView mCameraSettingMenuBack;
+
+    private Grid mGrid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,12 +126,15 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mCameraSetting = (ImageButton) findViewById(R.id.iv_camera_setting);
         mRightMenuBg = findViewById(R.id.right_menu_bg);
         mFastSettingMenuLayout = (LinearLayout) findViewById(R.id.menu_fast_setting);
-        mFastSettingMenuTtile = (TextView) findViewById(R.id.tv_fast_setting_title);
+        mFastSettingMenuTitle = (TextView) findViewById(R.id.tv_fast_setting_title);
         mTakeModeBtn = (ImageButton) findViewById(R.id.btn_take_mode);
         mShutterBtn = (ImageButton) findViewById(R.id.btn_shutter);
         mCameraSwitchBtn = (ImageButton) findViewById(R.id.btn_camera_switch);
         mAlbumBtn = (ImageButton) findViewById(R.id.btn_album);
         mCameraSettingMenuBack = (ImageView) findViewById(R.id.iv_back);
+        mGrid = (Grid) findViewById(R.id.grid);
+        updateGrid((String) SharedPrefUtils.getParam(GridSelectFragment.KEY_GRID,
+                GridSelectFragment.VALUE_GRID_NONE));
         mCameraSettingMenuBack.setOnClickListener(this);
         mCameraSetting.setOnClickListener(this);
         mTakeModeBtn.setOnClickListener(this);
@@ -213,6 +224,26 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         }
     }
 
+    public void updateGrid(String value) {
+        switch (value) {
+            case GridSelectFragment.VALUE_GRID_NONE:
+                mGrid.setVisibility(View.GONE);
+                break;
+            case GridSelectFragment.VALUE_GRID_LINES:
+                mGrid.setVisibility(View.VISIBLE);
+                mGrid.showWithDiagonal(Grid.MODE_LINES);
+                break;
+            case GridSelectFragment.VALUE_GRID_DIAGONAL:
+                mGrid.setVisibility(View.VISIBLE);
+                mGrid.showWithDiagonal(Grid.MODE_WITH_DIAGONAL);
+                break;
+            case GridSelectFragment.VALUE_GRID_CENTER_POINT:
+                mGrid.setVisibility(View.VISIBLE);
+                mGrid.showWithDiagonal(Grid.MODE_CENTER_POINT);
+                break;
+        }
+    }
+
     @Override
     public void onClick(View v) {
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -258,12 +289,27 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     public void showWhiteBalanceTitleBar() {
         mCameraSettingMenuBack.setVisibility(View.VISIBLE);
-        mFastSettingMenuTtile.setText(R.string.white_balance);
+        mFastSettingMenuTitle.setText(R.string.white_balance);
+    }
+
+    public void showVideoResolutionTitleBar() {
+        mCameraSettingMenuBack.setVisibility(View.VISIBLE);
+        mFastSettingMenuTitle.setText(R.string.video_resolution);
+    }
+
+    public void showFlashModeTitleBar() {
+        mCameraSettingMenuBack.setVisibility(View.VISIBLE);
+        mFastSettingMenuTitle.setText(R.string.camera_flash);
+    }
+
+    public void showGridModeTitleBar() {
+        mCameraSettingMenuBack.setVisibility(View.VISIBLE);
+        mFastSettingMenuTitle.setText(R.string.camera_grid);
     }
 
     private void showCameraFastSettingTitleBar() {
         mCameraSettingMenuBack.setVisibility(View.GONE);
-        mFastSettingMenuTtile.setText(R.string.permission_camera);
+        mFastSettingMenuTitle.setText(R.string.permission_camera);
     }
 
     private void changeToCameraFastSettingFragment(FragmentManager fm) {
@@ -271,8 +317,27 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         changeFragment(ft, new CameraFastSettingFragment());
     }
 
-    public void changeToFragmentWithAnim(FragmentManager fm, Fragment f) {
+    public void changeToWhiteBalanceFragment(FragmentManager fm) {
         showWhiteBalanceTitleBar();
+        changeToFragmentWithAnim(fm, new WhiteBalanceFragment());
+    }
+
+    public void changeToVideoResolutionFragment(FragmentManager fm) {
+        showVideoResolutionTitleBar();
+        changeToFragmentWithAnim(fm, new VideoResolutionSelectFragment());
+    }
+
+    public void changeToGridFragment(FragmentManager fm) {
+        showGridModeTitleBar();
+        changeToFragmentWithAnim(fm, new GridSelectFragment());
+    }
+
+    public void changeToFlashModeFragment(FragmentManager fm) {
+        showFlashModeTitleBar();
+        changeToFragmentWithAnim(fm, new FlashSelectFragment());
+    }
+
+    private void changeToFragmentWithAnim(FragmentManager fm, Fragment f) {
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
         changeFragment(ft, f);

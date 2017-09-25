@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/video_resolution_1080"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/video_resolution_1080p"
+        app:radio_right_icon="@mipmap/video_resolution_1080"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/video_resolution_720"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/video_resolution_720p"
+        app:radio_right_icon="@mipmap/video_resolution_720"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/video_resolution_480"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/video_resolution_480p"
+        app:radio_right_icon="@mipmap/video_resolution_480"/>
+</LinearLayout>

@@ -13,7 +13,7 @@
         android:layout_marginLeft="15dp"
         android:text="TextView"
         android:textColor="@color/color0"
-        android:textSize="@dimen/textSize2"/>
+        android:textSize="@dimen/textSize1"/>
 
     <ImageView
         android:id="@+id/iv_arrows"

@@ -11,8 +11,15 @@ import android.view.ViewGroup;
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.core.camera.CameraHelper;
 import com.ziguang.ptz.ui.camera.CameraActivity;
+import com.ziguang.ptz.utils.SharedPrefUtils;
 
 import java.lang.ref.WeakReference;
+
+import static com.ziguang.ptz.ui.setting.GridSelectFragment.KEY_GRID;
+import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_CENTER_POINT;
+import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_DIAGONAL;
+import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_LINES;
+import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_NONE;
 
 /**
  * Created by zhaoliangtai on 2017/9/18.
@@ -46,7 +53,7 @@ public class CameraFastSettingFragment extends Fragment {
         mItemVideoSize.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
             @Override
             public void onClick(View v) {
-
+                mActivityWeakReference.get().changeToVideoResolutionFragment(getFragmentManager());
             }
         });
         mItemBeaut.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
@@ -58,21 +65,19 @@ public class CameraFastSettingFragment extends Fragment {
         mItemWhiteBalance.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
             @Override
             public void onClick(View v) {
-                mActivityWeakReference.get().changeToFragmentWithAnim(getFragmentManager(),
-                        new WhiteBalanceFragment());
+                mActivityWeakReference.get().changeToWhiteBalanceFragment(getFragmentManager());
             }
         });
         mItemFlash.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
             @Override
             public void onClick(View v) {
-                mActivityWeakReference.get().changeToFragmentWithAnim(getFragmentManager(),
-                        new FlashSelectFragment());
+                mActivityWeakReference.get().changeToFlashModeFragment(getFragmentManager());
             }
         });
         mItemGrid.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
             @Override
             public void onClick(View v) {
-
+                mActivityWeakReference.get().changeToGridFragment(getFragmentManager());
             }
         });
     }
@@ -80,6 +85,7 @@ public class CameraFastSettingFragment extends Fragment {
     private void initData() {
         initWhiteBalanceStatus();
         initFlashModeStatus();
+        initGridStatus();
     }
 
     private void initFlashModeStatus() {
@@ -129,6 +135,27 @@ public class CameraFastSettingFragment extends Fragment {
             default:
                 mItemWhiteBalance.setRightIcon(getResources()
                         .getDrawable(R.mipmap.white_balance_auto));
+                break;
+        }
+    }
+
+    private void initGridStatus() {
+        String gridMode = (String) SharedPrefUtils.getParam(KEY_GRID, VALUE_GRID_NONE);
+        switch (gridMode) {
+            case VALUE_GRID_NONE:
+                mItemGrid.setRightIcon(getResources().getDrawable(R.mipmap.icon_grid_none));
+                break;
+            case VALUE_GRID_LINES:
+                mItemGrid.setRightIcon(getResources().getDrawable(R.mipmap.icon_grid));
+                break;
+            case VALUE_GRID_DIAGONAL:
+                mItemGrid.setRightIcon(getResources().getDrawable(R.mipmap.icon_grid_diagonal));
+                break;
+            case VALUE_GRID_CENTER_POINT:
+                mItemGrid.setRightIcon(getResources().getDrawable(R.mipmap.icon_grid_center));
+                break;
+            default:
+                mItemGrid.setRightIcon(getResources().getDrawable(R.mipmap.icon_grid_none));
                 break;
         }
     }
