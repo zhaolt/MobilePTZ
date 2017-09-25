@@ -2,10 +2,12 @@ package com.ziguang.ptz.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -34,6 +36,7 @@ public class LengthwaysSwitch extends View {
 
     private boolean mFlag = false;
 
+
     public LengthwaysSwitch(Context context) {
         super(context);
     }
@@ -44,6 +47,32 @@ public class LengthwaysSwitch extends View {
 
 
     private void init() {
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
 //        mSwitchBottom = BitmapFactory.decodeResource()
+    }
+
+    public void setSwitchOn(boolean switchOn) {
+        mFlag = switchOn;
+    }
+
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }

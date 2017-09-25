@@ -65,7 +65,8 @@ public class CameraFastSettingFragment extends Fragment {
         mItemFlash.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {
             @Override
             public void onClick(View v) {
-
+                mActivityWeakReference.get().changeToFragmentWithAnim(getFragmentManager(),
+                        new FlashSelectFragment());
             }
         });
         mItemGrid.setOnItemClickListener(new FastSettingArrowsItemView.OnItemClickListener() {

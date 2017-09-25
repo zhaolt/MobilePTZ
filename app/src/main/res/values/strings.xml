@@ -23,9 +23,18 @@
     <string name="album">图库</string>
 
     <!-- camera -->
+    <!-- 白平衡 -->
+    <string name="white_balance">白平衡</string>
     <string name="white_balance_auto">自动</string>
     <string name="white_balance_incandescent">白炽灯</string>
     <string name="white_balance_fluorescent">荧光灯</string>
     <string name="white_balance_daylight">日光</string>
     <string name="white_balance_cloudy_daylight">阴天</string>
+
+    <!-- 闪光灯 -->
+    <string name="camera_flash">闪光灯</string>
+    <string name="flash_auto">自动</string>
+    <string name="flash_on">打开</string>
+    <string name="flash_off">关闭</string>
+    <string name="flash_torch">常亮</string>
 </resources>

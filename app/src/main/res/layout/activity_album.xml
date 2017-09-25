@@ -24,6 +24,7 @@
         app:tl_indicator_margin_right="15dp"
         app:tl_divider_padding="20dp"
         app:tl_tab_padding="18dp"
+        android:gravity="center"
         app:tl_textSelectColor="@color/color4"
         app:tl_textUnselectColor="@color/color4"
         android:background="@color/color2"/>

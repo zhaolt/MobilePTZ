@@ -36,7 +36,6 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     private static final String CAMERA_LENS_TAG = "cameraLens";
 
-
     private static final String TAG = CameraActivity.class.getSimpleName();
 
     private ImageButton mCameraSetting;
@@ -58,6 +57,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private ImageButton mAlbumBtn;
 
     private PreviewDisplayFragment mPreviewDisplayFragment;
+
+    private ImageView mCameraSettingMenuBack;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +123,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mShutterBtn = (ImageButton) findViewById(R.id.btn_shutter);
         mCameraSwitchBtn = (ImageButton) findViewById(R.id.btn_camera_switch);
         mAlbumBtn = (ImageButton) findViewById(R.id.btn_album);
+        mCameraSettingMenuBack = (ImageView) findViewById(R.id.iv_back);
+        mCameraSettingMenuBack.setOnClickListener(this);
         mCameraSetting.setOnClickListener(this);
         mTakeModeBtn.setOnClickListener(this);
         mShutterBtn.setOnClickListener(this);
@@ -212,23 +215,27 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
         switch (v.getId()) {
             case R.id.iv_camera_setting:
                 mCameraSetting.setSelected(!mCameraSetting.isSelected());
                 showCameraFastSettingMenu(mCameraSetting.isSelected());
                 break;
             case R.id.btn_shutter:
+                CameraHelper.getInstance().takePicture(rotation);
                 break;
             case R.id.btn_take_mode:
                 break;
             case R.id.btn_camera_switch:
-                int rotation = getWindowManager().getDefaultDisplay().getRotation();
                 CameraHelper.getInstance().switchCamera(mPreviewDisplayFragment.getSurfaceTexture(),
                         rotation);
                 break;
             case R.id.btn_album:
                 Intent intent = new Intent(this, AlbumActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.iv_back:
+                backToFastSettingFragment(getFragmentManager());
                 break;
         }
     }
@@ -241,11 +248,22 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
             isCameraFastMenuShow = true;
         } else {
             mRightMenuBg.setVisibility(View.GONE);
+            showCameraFastSettingTitleBar();
             mFastSettingMenuLayout.setVisibility(View.GONE);
             removeFragmentByTag(getFragmentManager(),
                     CameraFastSettingFragment.class.toString());
             isCameraFastMenuShow = false;
         }
+    }
+
+    public void showWhiteBalanceTitleBar() {
+        mCameraSettingMenuBack.setVisibility(View.VISIBLE);
+        mFastSettingMenuTtile.setText(R.string.white_balance);
+    }
+
+    private void showCameraFastSettingTitleBar() {
+        mCameraSettingMenuBack.setVisibility(View.GONE);
+        mFastSettingMenuTtile.setText(R.string.permission_camera);
     }
 
     private void changeToCameraFastSettingFragment(FragmentManager fm) {
@@ -254,15 +272,23 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     }
 
     public void changeToFragmentWithAnim(FragmentManager fm, Fragment f) {
-
+        showWhiteBalanceTitleBar();
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
         changeFragment(ft, f);
     }
 
+
     private void changeFragment(FragmentTransaction ft, Fragment f) {
         ft.replace(R.id.frame_fast_setting, f, f.getClass().toString());
         ft.commit();
+    }
+
+    private void backToFastSettingFragment(FragmentManager fm) {
+        showCameraFastSettingTitleBar();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+        changeFragment(ft, new CameraFastSettingFragment());
     }
 
     private void removeFragmentByTag(FragmentManager fm, String tag) {

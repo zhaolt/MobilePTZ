@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/flash_mode_auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/flash_auto"
+        app:radio_right_icon="@mipmap/flash_mode_auto"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/flash_mode_on"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/flash_on"
+        app:radio_right_icon="@mipmap/flash_mode_on"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/flash_mode_off"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/flash_off"
+        app:radio_right_icon="@mipmap/flash_mode_off"/>
+    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+        android:id="@+id/flash_mode_torch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:radio_item_name="@string/flash_torch"
+        app:radio_right_icon="@mipmap/flash_mode_torch"/>
+
+</LinearLayout>
