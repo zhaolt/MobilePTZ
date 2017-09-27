@@ -93,6 +93,20 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 
     }
 
+    public void choosePhotoCamera() {
+        CameraHelper.getInstance().choosePhotoMode(mDisplayView.getSurfaceTexture(),
+                getActivity().getWindowManager().getDefaultDisplay().getRotation());
+    }
+
+    public void chooseVideoCamera() {
+        CameraHelper.getInstance().chooseVideoMode(mDisplayView.getSurfaceTexture(),
+                getActivity().getWindowManager().getDefaultDisplay().getRotation());
+    }
+
+    public void startRecordingVideo() {
+        CameraHelper.getInstance().startRecordingVideo(mDisplayView.getSurfaceTexture());
+    }
+
     public void areaFocus(Point point, int width, int height) {
         if (isFocusing) return;
         mMainThreadHandler.removeCallbacks(mDefaultFocusModeTask);

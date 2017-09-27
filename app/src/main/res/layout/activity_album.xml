@@ -3,31 +3,38 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="@color/color2"
               android:orientation="vertical">
 
     <com.ziguang.ptz.widget.TitleBar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color2"
+        app:bg_color="@color/color2"
         app:title_text="@string/album"/>
+
 
     <com.flyco.tablayout.SlidingTabLayout
         android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
-        app:tl_textsize="@dimen/textSize2"
+        android:layout_gravity="center"
+        android:background="@color/color2"
+        app:tl_divider_padding="20dp"
         app:tl_iconVisible="false"
-        app:tl_indicator_height="2dp"
         app:tl_indicator_color="@color/color0"
+        app:tl_indicator_height="2dp"
         app:tl_indicator_margin_left="15dp"
         app:tl_indicator_margin_right="15dp"
-        app:tl_divider_padding="20dp"
         app:tl_tab_padding="18dp"
-        android:gravity="center"
         app:tl_textSelectColor="@color/color4"
         app:tl_textUnselectColor="@color/color4"
-        android:background="@color/color2"/>
+        app:tl_textsize="@dimen/textSize2"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#fff"/>
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"

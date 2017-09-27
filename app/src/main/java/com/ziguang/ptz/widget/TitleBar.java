@@ -68,7 +68,7 @@ public class TitleBar extends RelativeLayout {
         String title = typedArray.getString(R.styleable.TitleBar_title_text);
         mTitle.setText(title);
         int background = typedArray.getColor(R.styleable.TitleBar_bg_color, context.getResources()
-                .getColor(R.color.md_btn_selected));
+                .getColor(R.color.color2));
         mRootView.setBackgroundColor(background);
         typedArray.recycle();
     }

@@ -33,6 +33,7 @@ import com.ziguang.ptz.utils.PermissionUtils;
 import com.ziguang.ptz.utils.SharedPrefUtils;
 import com.ziguang.ptz.utils.UIUtils;
 import com.ziguang.ptz.widget.Grid;
+import com.ziguang.ptz.widget.LengthwaysSwitch;
 
 /**
  * Created by zhaoliangtai on 2017/8/18.
@@ -67,6 +68,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private ImageView mCameraSettingMenuBack;
 
     private Grid mGrid;
+
+    private LengthwaysSwitch mCameraModeSwitch;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,6 +136,17 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mAlbumBtn = (ImageButton) findViewById(R.id.btn_album);
         mCameraSettingMenuBack = (ImageView) findViewById(R.id.iv_back);
         mGrid = (Grid) findViewById(R.id.grid);
+        mCameraModeSwitch = (LengthwaysSwitch) findViewById(R.id.mode_switch);
+        mCameraModeSwitch.setOnSwitchChangeListener(new LengthwaysSwitch.OnSwitchChangeListener() {
+            @Override
+            public void onChanged(boolean isOpen) {
+                if (isOpen) {
+                    mPreviewDisplayFragment.chooseVideoCamera();
+                } else {
+                    mPreviewDisplayFragment.choosePhotoCamera();
+                }
+            }
+        });
         updateGrid((String) SharedPrefUtils.getParam(GridSelectFragment.KEY_GRID,
                 GridSelectFragment.VALUE_GRID_NONE));
         mCameraSettingMenuBack.setOnClickListener(this);
@@ -180,14 +194,6 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
             }
         });
 
-        ImageView shutter = (ImageView) findViewById(R.id.iv_shutter);
-        shutter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraHelper.getInstance().takePicture(getWindowManager()
-                        .getDefaultDisplay().getRotation());
-            }
-        });
     }
 
     public void permissionDeniedForeverCallback(String[] permissions) {
@@ -253,7 +259,11 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
                 showCameraFastSettingMenu(mCameraSetting.isSelected());
                 break;
             case R.id.btn_shutter:
-                CameraHelper.getInstance().takePicture(rotation);
+                int cameraMode = CameraHelper.getInstance().getCameraMode();
+                if (cameraMode == CameraHelper.PHOTO_CAMERA)
+                    CameraHelper.getInstance().takePicture(rotation);
+                else if (cameraMode == CameraHelper.VIDEO_CAMERA)
+                    mPreviewDisplayFragment.startRecordingVideo();
                 break;
             case R.id.btn_take_mode:
                 break;

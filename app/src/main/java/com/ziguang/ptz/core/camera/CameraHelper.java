@@ -305,6 +305,10 @@ public class CameraHelper {
         openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
     }
 
+    public void choosePhotoMode(SurfaceTexture surfaceTexture, int rotation) {
+        openCamera(surfaceTexture, rotation, PHOTO_CAMERA);
+    }
+
 
     public void takePicture(int rotation) {
         mRotation = rotation;
