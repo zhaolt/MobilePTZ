@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -226,12 +227,23 @@ public class LengthwaysSwitch extends View implements ValueAnimator.AnimatorUpda
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        return super.onSaveInstanceState();
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+        ss.isOpen = this.isOpen ? 1 : 0;
+        return ss;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(state);
+        boolean result = ss.isOpen == 1;
+        setState(result);
+    }
+
+    public void setState(boolean open) {
+        isOpen = open;
+        invalidate();
     }
 
     @Override
@@ -257,5 +269,35 @@ public class LengthwaysSwitch extends View implements ValueAnimator.AnimatorUpda
 
     public interface OnSwitchChangeListener {
         void onChanged(boolean isOpen);
+    }
+
+    static class SavedState extends BaseSavedState {
+        int isOpen;
+        public SavedState(Parcel source) {
+            super(source);
+            isOpen = source.readInt();
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(isOpen);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel source) {
+                return new SavedState(source);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[0];
+            }
+        };
     }
 }
