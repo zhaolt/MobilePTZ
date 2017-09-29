@@ -23,44 +23,16 @@
         android:background="@color/color2"
         android:visibility="gone"/>
 
-    <LinearLayout
+    <include
         android:id="@+id/menu_fast_setting"
-        android:layout_width="190dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:layout_marginRight="@dimen/camera_act_menu_width"
-        android:background="@color/color1"
-        android:orientation="vertical"
-        android:visibility="gone">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/activity_dialog_title_height"
-            android:background="@color/color2">
-            <TextView
-                android:id="@+id/tv_fast_setting_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/permission_camera"
-                android:layout_centerInParent="true"
-                android:textColor="@color/color0"
-                android:textSize="@dimen/textSize2"/>
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/icon_arrow_left"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:visibility="gone"/>
-        </RelativeLayout>
-        <FrameLayout
-            android:id="@+id/frame_fast_setting"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
-
+        layout="@layout/layout_camera_fast_setting_menu"/>
+    <include
+        android:id="@+id/take_mode_menu"
+        layout="@layout/layout_take_mode_menu"/>
     <include
         layout="@layout/camera_act_menu_left"/>
+
+
 
     <include
         android:id="@+id/right_menu"
@@ -69,38 +41,6 @@
         android:layout_gravity="right"
         layout="@layout/camera_act_menu_right"/>
 
-    <RadioGroup
-        android:id="@+id/flash_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:visibility="gone">
-        <RadioButton
-            android:id="@+id/flash_auto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="闪光灯-自动"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/flash_off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="闪光灯-关闭"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/flash_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="闪光灯-开启"
-            android:textColor="#ffffff"/>
-        <RadioButton
-            android:id="@+id/flash_all_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="闪光灯-常亮"
-            android:textColor="#ffffff"/>
-    </RadioGroup>
 
     <RadioGroup
         android:id="@+id/antibanding_group"

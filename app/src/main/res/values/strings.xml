@@ -50,4 +50,10 @@
     <string name="video_resolution_1080p">1080P</string>
     <string name="video_resolution_720p">720P</string>
     <string name="video_resolution_480p">480P</string>
+
+    <!-- 拍照模式 -->
+    <string name="photo_mode_single">单拍</string>
+    <string name="photo_mode_panoramic">全景拍</string>
+    <string name="photo_mode_long_exposure">长曝光</string>
+
 </resources>

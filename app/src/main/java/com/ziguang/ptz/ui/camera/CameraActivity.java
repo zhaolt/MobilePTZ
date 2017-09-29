@@ -155,30 +155,6 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mShutterBtn.setOnClickListener(this);
         mCameraSwitchBtn.setOnClickListener(this);
         mAlbumBtn.setOnClickListener(this);
-        RadioGroup flashGroup = (RadioGroup) findViewById(R.id.flash_group);
-        flashGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                switch (checkedId) {
-                    case R.id.flash_auto:
-                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                        break;
-                    case R.id.flash_off:
-                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                        break;
-                    case R.id.flash_on:
-                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-                        break;
-                    case R.id.flash_all_on:
-                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                        break;
-                    default:
-                        CameraHelper.getInstance().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                        break;
-                }
-            }
-        });
-
         RadioGroup antibandingGroup = (RadioGroup) findViewById(R.id.antibanding_group);
         antibandingGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

@@ -3,6 +3,7 @@
               android:layout_width="@dimen/camera_act_menu_width"
               android:layout_height="match_parent"
               android:orientation="vertical"
+              android:background="@drawable/camera_left_menu_shape"
               android:weightSum="4.5">
     <RelativeLayout
         android:layout_width="match_parent"
