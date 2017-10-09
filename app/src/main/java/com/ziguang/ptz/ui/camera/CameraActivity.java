@@ -22,6 +22,8 @@ import android.widget.TextView;
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.core.camera.CameraState;
+import com.ziguang.ptz.core.camera.SimplePhotoTake;
 import com.ziguang.ptz.ui.album.AlbumActivity;
 import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
 import com.ziguang.ptz.ui.setting.FlashSelectFragment;
@@ -39,7 +41,7 @@ import com.ziguang.ptz.widget.LengthwaysSwitch;
  * Created by zhaoliangtai on 2017/8/18.
  */
 
-public class CameraActivity extends FullScreenActivity implements View.OnClickListener {
+public class CameraActivity extends FullScreenActivity implements View.OnClickListener, CameraView {
 
     private static final String CAMERA_LENS_TAG = "cameraLens";
 
@@ -70,6 +72,12 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private Grid mGrid;
 
     private LengthwaysSwitch mCameraModeSwitch;
+
+    private View mTakeModeMenuView;
+
+    private TextView mTakeMode0, mTakeMode1, mTakeMode2;
+
+    private CameraState mCameraState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +145,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mCameraSettingMenuBack = (ImageView) findViewById(R.id.iv_back);
         mGrid = (Grid) findViewById(R.id.grid);
         mCameraModeSwitch = (LengthwaysSwitch) findViewById(R.id.mode_switch);
+        mTakeModeMenuView = findViewById(R.id.take_mode_menu);
         mCameraModeSwitch.setOnSwitchChangeListener(new LengthwaysSwitch.OnSwitchChangeListener() {
             @Override
             public void onChanged(boolean isOpen) {
@@ -169,7 +178,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
                 }
             }
         });
-
+        mCameraState = new SimplePhotoTake(this);
     }
 
     public void permissionDeniedForeverCallback(String[] permissions) {
@@ -329,6 +338,10 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         changeFragment(ft, f);
     }
 
+    private void showTakeModeMenu(boolean isShow) {
+        mTakeModeMenuView.setVisibility(isShow ? View.VISIBLE : View.GONE);
+    }
+
 
     private void changeFragment(FragmentTransaction ft, Fragment f) {
         ft.replace(R.id.frame_fast_setting, f, f.getClass().toString());
@@ -347,5 +360,25 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         Fragment fragment = fm.findFragmentByTag(tag);
         if (fragment == null) return;
         ft.remove(fragment);
+    }
+
+    @Override
+    public void updateCameraShutter(int resourceId) {
+        mShutterBtn.setImageResource(resourceId);
+    }
+
+    @Override
+    public void updateCameraTakeModeIcon(int resourceId) {
+        mTakeModeBtn.setImageResource(resourceId);
+    }
+
+    @Override
+    public void updatePhotoTakeModeMenu(int resId0, int resId1, int resId2) {
+
+    }
+
+    @Override
+    public void updateVideoTakeModeMenu(int resId0, int resId1) {
+
     }
 }

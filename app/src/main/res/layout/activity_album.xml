@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:bg_color="@color/color2"
+        app:back_image="@mipmap/icon_album_back"
         app:title_text="@string/album"/>
 
 

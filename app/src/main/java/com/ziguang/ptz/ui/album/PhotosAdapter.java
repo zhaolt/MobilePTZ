@@ -53,7 +53,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public PhotosAdapter(Context context, int rotation) {
         mContext = context;
         if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
-            mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 8;
+            mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 40)) / 6;
         } else if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
             mCellSize = (DeviceInfoUtils.getScreenWidth() - UIUtils.dip2px(context, 18.5f)) / 4;
         }

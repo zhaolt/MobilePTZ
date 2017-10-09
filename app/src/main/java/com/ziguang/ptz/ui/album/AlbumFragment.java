@@ -71,6 +71,12 @@ public class AlbumFragment extends ViewPagerFragment {
         rootView = inflater.inflate(R.layout.fragment_album, null);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_layout);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
         initGridView();
         return rootView;
     }
@@ -133,6 +139,7 @@ public class AlbumFragment extends ViewPagerFragment {
                     @Override
                     public void doOnError(Throwable e) {
                         e.printStackTrace();
+                        stopRefresh();
                     }
                 });
         mCompositeSubscription.add(subscriber);

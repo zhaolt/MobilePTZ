@@ -41,7 +41,13 @@ public class AlbumActivity extends FullScreenActivity {
         mTitleBar = (TitleBar) findViewById(R.id.tool_bar);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
-        mTitleBar.setActionMode(TitleBar.DISPLAY_STYLE_ACTION_ONLY_BACK_IMAGE);
+        mTitleBar.setActionMode(TitleBar.DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_IMAGE);
+        mTitleBar.setActionBackClickListener(new TitleBar.OnActionBackClickListener() {
+            @Override
+            public void onActionBackClick() {
+                finish();
+            }
+        });
         mTabTitles = getResources().getStringArray(R.array.album_tabs);
         initViewPager();
     }
