@@ -160,36 +160,42 @@ public class CameraHelper {
         return SingleTon.INSTANCE;
     }
 
-    public void openCamera(SurfaceTexture surfaceTexture, int rotation,
-                           int cameraType) {
-        closeCamera();
-        mCamera = Camera.open(mCameraID);
-        if (isPreview) {
-            mCamera.stopPreview();
-            isPreview = false;
-        }
-        mParameters = mCamera.getParameters();
-        printSupportPreviewSize(mParameters);
-        printSupportPictureSize(mParameters);
-        printSupportVideoSize(mParameters);
-        printSupportFocusMode(mParameters);
-        printSupportWhiteBalance(mParameters);
-        printSupportSceneModes(mParameters);
-        printSupportAntibanding(mParameters);
-        isSupportedAutoFocus = mParameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_AUTO);
-        switch (cameraType) {
-            case PHOTO_CAMERA:
-                setUpPhotoCamera(surfaceTexture, rotation);
-                break;
-            case VIDEO_CAMERA:
-                setUpVideoCamera(surfaceTexture, rotation);
-                break;
-            default:
-                setUpPhotoCamera(surfaceTexture, rotation);
-                break;
-        }
+    public Observable<Void> openCamera(final SurfaceTexture surfaceTexture, final int rotation,
+                                       final int cameraType) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                closeCamera();
+                mCamera = Camera.open(mCameraID);
+                if (isPreview) {
+                    mCamera.stopPreview();
+                    isPreview = false;
+                }
+                mParameters = mCamera.getParameters();
+                printSupportPreviewSize(mParameters);
+                printSupportPictureSize(mParameters);
+                printSupportVideoSize(mParameters);
+                printSupportFocusMode(mParameters);
+                printSupportWhiteBalance(mParameters);
+                printSupportSceneModes(mParameters);
+                printSupportAntibanding(mParameters);
+                isSupportedAutoFocus = mParameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_AUTO);
+                switch (cameraType) {
+                    case PHOTO_CAMERA:
+                        setUpPhotoCamera(surfaceTexture, rotation);
+                        break;
+                    case VIDEO_CAMERA:
+                        setUpVideoCamera(surfaceTexture, rotation);
+                        break;
+                    default:
+                        setUpPhotoCamera(surfaceTexture, rotation);
+                        break;
+                }
+                mRotation = rotation;
+                subscriber.onNext(null);
+            }
+        }).subscribeOn(Schedulers.io());
 
-        mRotation = rotation;
     }
 
     private void setUpPhotoCamera(SurfaceTexture surfaceTexture, int rotation) {
@@ -300,13 +306,13 @@ public class CameraHelper {
         }, 10 * 1000);
     }
 
-    public void chooseVideoMode(SurfaceTexture surfaceTexture,
+    public Observable<Void> chooseVideoMode(SurfaceTexture surfaceTexture,
                                 int rotation) {
-        openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
+        return openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
     }
 
-    public void choosePhotoMode(SurfaceTexture surfaceTexture, int rotation) {
-        openCamera(surfaceTexture, rotation, PHOTO_CAMERA);
+    public Observable<Void> choosePhotoMode(SurfaceTexture surfaceTexture, int rotation) {
+        return openCamera(surfaceTexture, rotation, PHOTO_CAMERA);
     }
 
 

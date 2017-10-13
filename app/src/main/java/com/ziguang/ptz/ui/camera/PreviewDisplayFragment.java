@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.ziguang.ptz.R;
 import com.ziguang.ptz.core.camera.CameraHelper;
+import com.ziguang.ptz.rx.NCSubscriber;
 import com.ziguang.ptz.utils.UIUtils;
 import com.ziguang.ptz.widget.AutoFitTextureView;
 import com.ziguang.ptz.widget.FocusImageView;
@@ -93,14 +94,25 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
 
     }
 
-    public void choosePhotoCamera() {
-        CameraHelper.getInstance().choosePhotoMode(mDisplayView.getSurfaceTexture(),
-                getActivity().getWindowManager().getDefaultDisplay().getRotation());
+    public SurfaceTexture getDisplaySurfaceTexture() {
+        return mDisplayView.getSurfaceTexture();
     }
+
 
     public void chooseVideoCamera() {
         CameraHelper.getInstance().chooseVideoMode(mDisplayView.getSurfaceTexture(),
-                getActivity().getWindowManager().getDefaultDisplay().getRotation());
+                getActivity().getWindowManager().getDefaultDisplay().getRotation())
+                .subscribe(new NCSubscriber<Void>() {
+                    @Override
+                    public void doOnNext(Void aVoid) {
+                        // TODO: 2017/10/12 enable shutters and more
+                    }
+
+                    @Override
+                    public void doOnError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public void startRecordingVideo() {

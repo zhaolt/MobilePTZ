@@ -8,6 +8,8 @@ import com.ziguang.ptz.ui.camera.CameraView;
  */
 
 public class LongExposureTake extends CameraState {
+
+
     public LongExposureTake(CameraView cameraView) {
         super(cameraView);
     }
@@ -15,5 +17,10 @@ public class LongExposureTake extends CameraState {
     @Override
     protected void preSet() {
         setCameraMode(MODE_PHOTO);
+    }
+
+    @Override
+    protected void take() {
+
     }
 }

@@ -34,6 +34,8 @@ public abstract class CameraState {
 
     protected abstract void preSet();
 
+    protected abstract void take();
+
     public void setCameraMode(@CameraMode int cameraMode) {
         this.cameraMode = cameraMode;
     }
@@ -45,6 +47,7 @@ public abstract class CameraState {
     public CameraState(CameraView cameraView) {
         this.cameraView = new WeakReference<>(cameraView);
         preSet();
+        onInit();
     }
 
     /**

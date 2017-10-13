@@ -37,6 +37,11 @@ public class SimplePhotoTake extends CameraState {
     }
 
     @Override
+    protected void take() {
+
+    }
+
+    @Override
     public void onInit() {
         super.onInit();
         CameraView view = cameraView.get();

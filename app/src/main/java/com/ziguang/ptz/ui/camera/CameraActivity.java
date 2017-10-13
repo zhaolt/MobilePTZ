@@ -5,9 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -16,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.ziguang.ptz.R;
@@ -24,6 +21,8 @@ import com.ziguang.ptz.base.FullScreenActivity;
 import com.ziguang.ptz.core.camera.CameraHelper;
 import com.ziguang.ptz.core.camera.CameraState;
 import com.ziguang.ptz.core.camera.SimplePhotoTake;
+import com.ziguang.ptz.core.camera.SimpleVideoTake;
+import com.ziguang.ptz.rx.NCSubscriber;
 import com.ziguang.ptz.ui.album.AlbumActivity;
 import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
 import com.ziguang.ptz.ui.setting.FlashSelectFragment;
@@ -150,9 +149,37 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
             @Override
             public void onChanged(boolean isOpen) {
                 if (isOpen) {
-                    mPreviewDisplayFragment.chooseVideoCamera();
+                    onCameraDisable();
+                    mCameraState = new SimpleVideoTake(CameraActivity.this);
+                    CameraHelper.getInstance().chooseVideoMode(mPreviewDisplayFragment.getSurfaceTexture(),
+                            getWindowManager().getDefaultDisplay().getRotation())
+                            .subscribe(new NCSubscriber<Void>() {
+                                @Override
+                                public void doOnNext(Void aVoid) {
+                                    onCameraEnable();
+                                }
+
+                                @Override
+                                public void doOnError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+                            });
                 } else {
-                    mPreviewDisplayFragment.choosePhotoCamera();
+                    onCameraDisable();
+                    mCameraState = new SimplePhotoTake(CameraActivity.this);
+                    CameraHelper.getInstance().choosePhotoMode(mPreviewDisplayFragment.getSurfaceTexture(),
+                            getWindowManager().getDefaultDisplay().getRotation())
+                            .subscribe(new NCSubscriber<Void>() {
+                                @Override
+                                public void doOnNext(Void aVoid) {
+                                    onCameraEnable();
+                                }
+
+                                @Override
+                                public void doOnError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+                            });
                 }
             }
         });
@@ -164,21 +191,20 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mShutterBtn.setOnClickListener(this);
         mCameraSwitchBtn.setOnClickListener(this);
         mAlbumBtn.setOnClickListener(this);
-        RadioGroup antibandingGroup = (RadioGroup) findViewById(R.id.antibanding_group);
-        antibandingGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                switch (checkedId) {
-                    case R.id.antibanding_50hz:
-                        CameraHelper.getInstance().setAntibanding(Camera.Parameters.ANTIBANDING_50HZ);
-                        break;
-                    case R.id.antibanding_auto:
-                        CameraHelper.getInstance().setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
-                        break;
-                }
-            }
-        });
-        mCameraState = new SimplePhotoTake(this);
+    }
+
+    private void onCameraDisable() {
+        setShutterEnable(false);
+        setFastSettingEnable(false);
+        setCameraModeSwitchEnable(false);
+        setTakeModeSelectEnable(false);
+    }
+
+    private void onCameraEnable() {
+        setShutterEnable(true);
+        setFastSettingEnable(true);
+        setCameraModeSwitchEnable(true);
+        setTakeModeSelectEnable(true);
     }
 
     public void permissionDeniedForeverCallback(String[] permissions) {
@@ -372,6 +398,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mTakeModeBtn.setImageResource(resourceId);
     }
 
+
+
     @Override
     public void updatePhotoTakeModeMenu(int resId0, int resId1, int resId2) {
 
@@ -379,6 +407,26 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     @Override
     public void updateVideoTakeModeMenu(int resId0, int resId1) {
+
+    }
+
+    @Override
+    public void setCameraModeSwitchEnable(boolean enable) {
+
+    }
+
+    @Override
+    public void setTakeModeSelectEnable(boolean enable) {
+
+    }
+
+    @Override
+    public void setShutterEnable(boolean enable) {
+
+    }
+
+    @Override
+    public void setFastSettingEnable(boolean enable) {
 
     }
 }

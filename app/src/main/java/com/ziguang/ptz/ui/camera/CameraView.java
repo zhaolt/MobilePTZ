@@ -14,4 +14,13 @@ public interface CameraView {
 
     void updateVideoTakeModeMenu(int resId0, int resId1);
 
+    // 左1
+    void setCameraModeSwitchEnable(boolean enable);
+    // 左2
+    void setTakeModeSelectEnable(boolean enable);
+
+    // 快门
+    void setShutterEnable(boolean enable);
+    // 快速设置
+    void setFastSettingEnable(boolean enable);
 }

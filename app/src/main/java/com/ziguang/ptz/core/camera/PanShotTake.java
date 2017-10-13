@@ -18,6 +18,11 @@ public class PanShotTake extends CameraState {
     }
 
     @Override
+    protected void take() {
+
+    }
+
+    @Override
     public void onInit() {
         super.onInit();
 

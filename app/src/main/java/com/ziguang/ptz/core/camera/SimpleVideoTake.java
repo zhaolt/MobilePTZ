@@ -17,6 +17,11 @@ public class SimpleVideoTake extends CameraState {
     }
 
     @Override
+    protected void take() {
+
+    }
+
+    @Override
     public void onInit() {
         super.onInit();
     }

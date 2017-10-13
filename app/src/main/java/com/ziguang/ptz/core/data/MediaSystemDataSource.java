@@ -3,7 +3,6 @@ package com.ziguang.ptz.core.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorJoiner;
-import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -36,11 +35,7 @@ public class MediaSystemDataSource implements MediaDataSource {
         public static final MediaSystemDataSource INSTANCE  = new MediaSystemDataSource();
     }
 
-    private MediaMetadataRetriever mRetriever;
-
-    private MediaSystemDataSource() {
-        mRetriever = new MediaMetadataRetriever();
-    }
+    private MediaSystemDataSource() {}
 
     public static MediaSystemDataSource getInstance() {
         return SingleTon.INSTANCE;
