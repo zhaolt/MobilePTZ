@@ -34,7 +34,7 @@ public abstract class CameraState {
 
     protected abstract void preSet();
 
-    protected abstract void take();
+    public abstract void take();
 
     public void setCameraMode(@CameraMode int cameraMode) {
         this.cameraMode = cameraMode;

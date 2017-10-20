@@ -71,7 +71,8 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-        CameraHelper.getInstance().openCamera(surface, rotation, CameraHelper.PHOTO_CAMERA);
+        CameraHelper.getInstance().openCamera(surface, rotation, CameraHelper.PHOTO_CAMERA)
+                .subscribe();
     }
 
     public SurfaceTexture getSurfaceTexture() {

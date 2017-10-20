@@ -422,7 +422,7 @@ public class CameraHelper {
     public void switchCamera(SurfaceTexture surfaceTexture, int rotation) {
         mCameraID++;
         mCameraID %= 2;
-        openCamera(surfaceTexture, rotation, PHOTO_CAMERA);
+        openCamera(surfaceTexture, rotation, PHOTO_CAMERA).subscribe();
     }
 
     public boolean isFrontCamera() {

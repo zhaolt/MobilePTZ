@@ -18,7 +18,7 @@ public class PanShotTake extends CameraState {
     }
 
     @Override
-    protected void take() {
+    public void take() {
 
     }
 

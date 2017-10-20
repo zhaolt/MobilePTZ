@@ -23,4 +23,6 @@ public interface CameraView {
     void setShutterEnable(boolean enable);
     // 快速设置
     void setFastSettingEnable(boolean enable);
+
+    void startRecording();
 }

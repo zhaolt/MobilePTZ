@@ -1,5 +1,6 @@
 package com.ziguang.ptz.core.camera;
 
+import android.app.Activity;
 import android.support.annotation.IntDef;
 
 import com.ziguang.ptz.R;
@@ -37,8 +38,9 @@ public class SimplePhotoTake extends CameraState {
     }
 
     @Override
-    protected void take() {
-
+    public void take() {
+        CameraHelper.getInstance().takePicture(
+                ((Activity) cameraView.get()).getWindowManager().getDefaultDisplay().getRotation());
     }
 
     @Override

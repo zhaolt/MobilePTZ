@@ -191,6 +191,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mShutterBtn.setOnClickListener(this);
         mCameraSwitchBtn.setOnClickListener(this);
         mAlbumBtn.setOnClickListener(this);
+        mCameraState = new SimplePhotoTake(CameraActivity.this);
     }
 
     private void onCameraDisable() {
@@ -270,11 +271,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
                 showCameraFastSettingMenu(mCameraSetting.isSelected());
                 break;
             case R.id.btn_shutter:
-                int cameraMode = CameraHelper.getInstance().getCameraMode();
-                if (cameraMode == CameraHelper.PHOTO_CAMERA)
-                    CameraHelper.getInstance().takePicture(rotation);
-                else if (cameraMode == CameraHelper.VIDEO_CAMERA)
-                    mPreviewDisplayFragment.startRecordingVideo();
+                mCameraState.take();
                 break;
             case R.id.btn_take_mode:
                 break;
@@ -428,5 +425,10 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     @Override
     public void setFastSettingEnable(boolean enable) {
 
+    }
+
+    @Override
+    public void startRecording() {
+        mPreviewDisplayFragment.startRecordingVideo();
     }
 }

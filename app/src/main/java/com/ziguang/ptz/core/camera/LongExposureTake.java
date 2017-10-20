@@ -20,7 +20,7 @@ public class LongExposureTake extends CameraState {
     }
 
     @Override
-    protected void take() {
+    public void take() {
 
     }
 }
