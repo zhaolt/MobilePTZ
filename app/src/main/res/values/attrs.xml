@@ -10,6 +10,8 @@
         <attr name="back_image" format="reference"/>
         <attr name="title_text" format="string|reference"/>
         <attr name="bg_color" format="color"/>
+        <attr name="back_text" format="string|reference"/>
+        <attr name="back_text_img" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="FastSettingArrowsItemView">
@@ -33,5 +35,10 @@
             <enum name="with_diagonal" value="102"/>
             <enum name="center_point" value="103"/>
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="IconWithArrowsItemView">
+        <attr name="item_icon" format="reference"/>
+        <attr name="item_title" format="string|reference"/>
     </declare-styleable>
 </resources>

@@ -4,31 +4,31 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+    <com.ziguang.ptz.ui.fast_setting.FastSettingRadioItemView
         android:id="@+id/white_balance_auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:radio_item_name="@string/white_balance_auto"
         app:radio_right_icon="@mipmap/white_balance_auto"/>
-    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+    <com.ziguang.ptz.ui.fast_setting.FastSettingRadioItemView
         android:id="@+id/white_balance_incandescent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:radio_item_name="@string/white_balance_incandescent"
         app:radio_right_icon="@mipmap/white_balance_incandescent"/>
-    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+    <com.ziguang.ptz.ui.fast_setting.FastSettingRadioItemView
         android:id="@+id/white_balance_fluorescent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:radio_item_name="@string/white_balance_fluorescent"
         app:radio_right_icon="@mipmap/white_balance_fluorescent"/>
-    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+    <com.ziguang.ptz.ui.fast_setting.FastSettingRadioItemView
         android:id="@+id/white_balance_daylight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:radio_item_name="@string/white_balance_daylight"
         app:radio_right_icon="@mipmap/white_balance_daylight"/>
-    <com.ziguang.ptz.ui.setting.FastSettingRadioItemView
+    <com.ziguang.ptz.ui.fast_setting.FastSettingRadioItemView
         android:id="@+id/white_balance_cloudy_daylight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

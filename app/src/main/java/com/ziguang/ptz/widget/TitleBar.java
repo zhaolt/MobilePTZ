@@ -79,6 +79,10 @@ public class TitleBar extends RelativeLayout implements View.OnClickListener {
         mTitle.setText(title);
         int background = typedArray.getColor(R.styleable.TitleBar_bg_color, context.getResources()
                 .getColor(R.color.color2));
+        String backText = typedArray.getString(R.styleable.TitleBar_back_text);
+        Drawable backTextImg = typedArray.getDrawable(R.styleable.TitleBar_back_text_img);
+        mBackText.setText(backText);
+        mBackText.setCompoundDrawables(backTextImg, null, null, null);
         mRootView.setBackgroundColor(background);
         typedArray.recycle();
     }

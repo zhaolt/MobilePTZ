@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="common_margin_border">15dp</dimen>
+    <dimen name="common_item_height">56dp</dimen>
+
     <dimen name="camera_act_menu_width">60dp</dimen>
     <dimen name="right_fast_setting_width">190dp</dimen>
     <dimen name="activity_dialog_title_height">40dp</dimen>
@@ -11,4 +14,5 @@
     <dimen name="textSize2">14sp</dimen>
     <dimen name="textSize3">16sp</dimen>
     <dimen name="textSize4">10sp</dimen>
+    <dimen name="textSize5">18sp</dimen>
 </resources>

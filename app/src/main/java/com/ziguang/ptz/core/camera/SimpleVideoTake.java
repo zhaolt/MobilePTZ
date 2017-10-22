@@ -25,13 +25,13 @@ public class SimpleVideoTake extends CameraState {
 
     @Override
     public void take() {
-//        if (mTakeState == TAKE_STATE_IDLE) {
-//            cameraView.get().startRecording();
-//            onWorking();
-//        } else {
-//            onIdle();
-//        }
-
+        if (mTakeState == TAKE_STATE_IDLE) {
+            cameraView.get().startRecording();
+            onWorking();
+        } else {
+            cameraView.get().stopRecording();
+            onIdle();
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.ziguang.ptz.ui.setting;
+package com.ziguang.ptz.ui.fast_setting;
 
 import android.app.Fragment;
 import android.hardware.Camera;

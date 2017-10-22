@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="@color/color3"
+              android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color4"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="@dimen/setting_item_height"
+        android:background="@color/color4"/>
+
+    <com.ziguang.ptz.ui.setting.IconWithArrowsItemView
+        android:id="@+id/camera_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_icon="@mipmap/icon_setting_camera"
+        app:item_title="@string/permission_camera"/>
+    <com.ziguang.ptz.ui.setting.IconWithArrowsItemView
+        android:id="@+id/ptz_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_icon="@mipmap/icon_setting_ptz"
+        app:item_title="@string/setting_ptz"/>
+    <com.ziguang.ptz.ui.setting.IconWithArrowsItemView
+        android:id="@+id/common_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_icon="@mipmap/icon_setting_common"
+        app:item_title="@string/setting_common"/>
+</LinearLayout>

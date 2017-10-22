@@ -8,6 +8,7 @@
     <string name="yesterday">昨天</string>
     <string name="minute">分</string>
     <string name="second">秒</string>
+    <string name="title_back">返回</string>
 
     <!-- permissions -->
     <string name="permission_hint">权限提醒</string>
@@ -19,7 +20,8 @@
     <string name="permission_camera">相机</string>
     <string name="permission_recording_audio">录音权限</string>
     <string name="permission_recording_mic">麦克风</string>
-    <string name="title_back">返回</string>
+
+    <!-- 相册 -->
     <string name="album">图库</string>
 
     <!-- camera -->
@@ -56,4 +58,8 @@
     <string name="photo_mode_panoramic">全景拍</string>
     <string name="photo_mode_long_exposure">长曝光</string>
 
+    <!-- 系统设置 -->
+    <string name="setting_title">设置</string>
+    <string name="setting_ptz">云台</string>
+    <string name="setting_common">通用</string>
 </resources>

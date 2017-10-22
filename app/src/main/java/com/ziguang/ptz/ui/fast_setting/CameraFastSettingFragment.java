@@ -1,4 +1,4 @@
-package com.ziguang.ptz.ui.setting;
+package com.ziguang.ptz.ui.fast_setting;
 
 import android.app.Fragment;
 import android.hardware.Camera;
@@ -15,11 +15,11 @@ import com.ziguang.ptz.utils.SharedPrefUtils;
 
 import java.lang.ref.WeakReference;
 
-import static com.ziguang.ptz.ui.setting.GridSelectFragment.KEY_GRID;
-import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_CENTER_POINT;
-import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_DIAGONAL;
-import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_LINES;
-import static com.ziguang.ptz.ui.setting.GridSelectFragment.VALUE_GRID_NONE;
+import static com.ziguang.ptz.ui.fast_setting.GridSelectFragment.KEY_GRID;
+import static com.ziguang.ptz.ui.fast_setting.GridSelectFragment.VALUE_GRID_CENTER_POINT;
+import static com.ziguang.ptz.ui.fast_setting.GridSelectFragment.VALUE_GRID_DIAGONAL;
+import static com.ziguang.ptz.ui.fast_setting.GridSelectFragment.VALUE_GRID_LINES;
+import static com.ziguang.ptz.ui.fast_setting.GridSelectFragment.VALUE_GRID_NONE;
 
 /**
  * Created by zhaoliangtai on 2017/9/18.

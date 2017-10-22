@@ -25,4 +25,6 @@ public interface CameraView {
     void setFastSettingEnable(boolean enable);
 
     void startRecording();
+
+    void stopRecording();
 }

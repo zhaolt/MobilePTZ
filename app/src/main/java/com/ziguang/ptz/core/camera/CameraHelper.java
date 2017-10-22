@@ -7,8 +7,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -71,6 +69,8 @@ public class CameraHelper {
     private boolean isSupportedAutoFocus = true;
 
     private int mCameraMode = PHOTO_CAMERA;
+
+    private MediaRecorderWrapper mMediaRecorderWrapper;
 
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
@@ -293,21 +293,22 @@ public class CameraHelper {
     public void startRecordingVideo(SurfaceTexture surfaceTexture) {
         Surface surface = new Surface(surfaceTexture);
         mCamera.unlock();
-        final MediaRecorderWrapper mediaRecorderWrapper = MediaRecorderWrapper.setUpMediaRecord(mCamera,
+        mMediaRecorderWrapper = MediaRecorderWrapper.setUpMediaRecord(mCamera,
                 mVideoSize.width, mVideoSize.height, 30, (int) (2.1 * 1024 * 1024 * 8),
                 ORIENTATIONS.get(mRotation), surface);
-        mediaRecorderWrapper.startRecordingVideo(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "abs.mp4");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mediaRecorderWrapper.stopRecordingVideo();
-                mCamera.startPreview();
-            }
-        }, 10 * 1000);
+        mMediaRecorderWrapper.startRecordingVideo(FileUtils.createMP4().getAbsolutePath());
+    }
+
+    public void stopRecordingVideo() {
+        if (null != mMediaRecorderWrapper) {
+            mMediaRecorderWrapper.stopRecordingVideo();
+        }
+        mCamera.startPreview();
+        mMediaRecorderWrapper = null;
     }
 
     public Observable<Void> chooseVideoMode(SurfaceTexture surfaceTexture,
-                                int rotation) {
+                                            int rotation) {
         return openCamera(surfaceTexture, rotation, VIDEO_CAMERA);
     }
 

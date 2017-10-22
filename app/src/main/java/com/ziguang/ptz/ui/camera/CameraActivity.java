@@ -24,11 +24,11 @@ import com.ziguang.ptz.core.camera.SimplePhotoTake;
 import com.ziguang.ptz.core.camera.SimpleVideoTake;
 import com.ziguang.ptz.rx.NCSubscriber;
 import com.ziguang.ptz.ui.album.AlbumActivity;
-import com.ziguang.ptz.ui.setting.CameraFastSettingFragment;
-import com.ziguang.ptz.ui.setting.FlashSelectFragment;
-import com.ziguang.ptz.ui.setting.GridSelectFragment;
-import com.ziguang.ptz.ui.setting.VideoResolutionSelectFragment;
-import com.ziguang.ptz.ui.setting.WhiteBalanceFragment;
+import com.ziguang.ptz.ui.fast_setting.CameraFastSettingFragment;
+import com.ziguang.ptz.ui.fast_setting.FlashSelectFragment;
+import com.ziguang.ptz.ui.fast_setting.GridSelectFragment;
+import com.ziguang.ptz.ui.fast_setting.VideoResolutionSelectFragment;
+import com.ziguang.ptz.ui.fast_setting.WhiteBalanceFragment;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
 import com.ziguang.ptz.utils.SharedPrefUtils;
@@ -430,5 +430,10 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     @Override
     public void startRecording() {
         mPreviewDisplayFragment.startRecordingVideo();
+    }
+
+    @Override
+    public void stopRecording() {
+        mPreviewDisplayFragment.stopRecordingVideo();
     }
 }

@@ -120,6 +120,10 @@ public class PreviewDisplayFragment extends Fragment implements TextureView.Surf
         CameraHelper.getInstance().startRecordingVideo(mDisplayView.getSurfaceTexture());
     }
 
+    public void stopRecordingVideo() {
+        CameraHelper.getInstance().stopRecordingVideo();
+    }
+
     public void areaFocus(Point point, int width, int height) {
         if (isFocusing) return;
         mMainThreadHandler.removeCallbacks(mDefaultFocusModeTask);
