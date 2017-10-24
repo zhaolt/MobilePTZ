@@ -33,6 +33,9 @@
         <activity android:name=".ui.setting.SettingActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme_Full_Screen"/>
+        <activity android:name=".ui.setting.CameraSettingActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme_Full_Screen"/>
     </application>
 
 </manifest>

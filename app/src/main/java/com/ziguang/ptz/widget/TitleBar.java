@@ -34,6 +34,10 @@ public class TitleBar extends RelativeLayout implements View.OnClickListener {
             | DISPLAY_NO_BACK_WITH_TEXT
             | DISPLAY_NO_TITLE;
 
+    public static final int DISPLAY_STYLE_ACTION_BACK_TEXT = DISPLAY_NO_ACTION_IMAGE
+            | DISPLAY_NO_BACK_IMAGE
+            | DISPLAY_NO_ACTION_TEXT;
+
     private View mView;
 
     private ImageView mBackImg;
@@ -77,13 +81,16 @@ public class TitleBar extends RelativeLayout implements View.OnClickListener {
         mBackImg.setImageDrawable(drawable);
         String title = typedArray.getString(R.styleable.TitleBar_title_text);
         mTitle.setText(title);
-        int background = typedArray.getColor(R.styleable.TitleBar_bg_color, context.getResources()
-                .getColor(R.color.color2));
+//        int background = typedArray.getColor(R.styleable.TitleBar_bg_color, context.getResources()
+//                .getColor(R.color.color2));
         String backText = typedArray.getString(R.styleable.TitleBar_back_text);
         Drawable backTextImg = typedArray.getDrawable(R.styleable.TitleBar_back_text_img);
         mBackText.setText(backText);
-        mBackText.setCompoundDrawables(backTextImg, null, null, null);
-        mRootView.setBackgroundColor(background);
+        if (null != backTextImg) {
+            backTextImg.setBounds(0, 0, backTextImg.getMinimumWidth(), backTextImg.getMinimumHeight());
+            mBackText.setCompoundDrawables(backTextImg, null, null, null);
+        }
+//        mRootView.setBackgroundColor(background);
         typedArray.recycle();
     }
 
@@ -102,11 +109,19 @@ public class TitleBar extends RelativeLayout implements View.OnClickListener {
         }
     }
 
+    public void setActionText(String text) {
+        mRightText.setText(text);
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
+                if (null != mActionBackClickListener)
+                    mActionBackClickListener.onActionBackClick();
+                break;
+            case R.id.tv_back:
                 if (null != mActionBackClickListener)
                     mActionBackClickListener.onActionBackClick();
                 break;

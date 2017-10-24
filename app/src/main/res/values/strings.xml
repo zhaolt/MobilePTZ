@@ -23,6 +23,7 @@
 
     <!-- 相册 -->
     <string name="album">图库</string>
+    <string name="photo">照片</string>
 
     <!-- camera -->
     <!-- 白平衡 -->
@@ -62,4 +63,6 @@
     <string name="setting_title">设置</string>
     <string name="setting_ptz">云台</string>
     <string name="setting_common">通用</string>
+    <string name="photo_ratio">照片比例</string>
+    <string name="antibanding">抗闪烁</string>
 </resources>

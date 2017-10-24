@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:id="@+id/root"
-                android:layout_height="@dimen/common_item_height"
-                android:background="@color/color2">
+                android:layout_height="@dimen/common_item_height">
 
     <ImageView
         android:id="@+id/iv_icon"

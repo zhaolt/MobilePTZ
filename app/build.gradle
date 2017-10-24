@@ -21,16 +21,8 @@ android {
                 throw new InvalidUserDataException(ex.toString())
             }
         }
-
         debug {
-            try {
-                storeFile file("../keystore/thunder.jks")
-                storePassword "001126"
-                keyAlias "ziguang"
-                keyPassword "001126"
-            } catch (ex) {
-                throw new InvalidUserDataException(ex.toString())
-            }
+            storeFile file("../keystore/debug.keystore")
         }
     }
     defaultConfig {
@@ -47,7 +39,7 @@ android {
             minifyEnabled false
             buildConfigField 'Integer', 'DATABASE_VERSION', '1'
             buildConfigField 'String', 'DATABASE_NAME', '\"thunder.db\"'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
 
         release {

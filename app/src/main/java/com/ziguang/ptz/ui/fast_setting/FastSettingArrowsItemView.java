@@ -58,6 +58,8 @@ public class FastSettingArrowsItemView extends RelativeLayout {
         String itemName = typedArray.getString(R.styleable.FastSettingArrowsItemView_item_name);
         mItemName.setText(itemName);
         Drawable drawable = typedArray.getDrawable(R.styleable.FastSettingArrowsItemView_right_icon);
+        float textSize = typedArray.getDimension(R.styleable.FastSettingArrowsItemView_item_text_size, 12);
+        mItemName.setTextSize(textSize);
         mRightIcon.setImageDrawable(drawable);
         int visible = typedArray.getInt(R.styleable.FastSettingArrowsItemView_right_icon_visibility,
                 VISIBLE);

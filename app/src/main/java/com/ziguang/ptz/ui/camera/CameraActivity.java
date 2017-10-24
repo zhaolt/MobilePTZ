@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -29,6 +28,7 @@ import com.ziguang.ptz.ui.fast_setting.FlashSelectFragment;
 import com.ziguang.ptz.ui.fast_setting.GridSelectFragment;
 import com.ziguang.ptz.ui.fast_setting.VideoResolutionSelectFragment;
 import com.ziguang.ptz.ui.fast_setting.WhiteBalanceFragment;
+import com.ziguang.ptz.ui.setting.SettingActivity;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
 import com.ziguang.ptz.utils.SharedPrefUtils;
@@ -63,6 +63,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private ImageButton mCameraSwitchBtn;
 
     private ImageButton mAlbumBtn;
+
+    private ImageButton mSettingBtn;
 
     private PreviewDisplayFragment mPreviewDisplayFragment;
 
@@ -145,6 +147,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mGrid = (Grid) findViewById(R.id.grid);
         mCameraModeSwitch = (LengthwaysSwitch) findViewById(R.id.mode_switch);
         mTakeModeMenuView = findViewById(R.id.take_mode_menu);
+        mSettingBtn = (ImageButton) findViewById(R.id.iv_setting);
         mCameraModeSwitch.setOnSwitchChangeListener(new LengthwaysSwitch.OnSwitchChangeListener() {
             @Override
             public void onChanged(boolean isOpen) {
@@ -191,6 +194,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mShutterBtn.setOnClickListener(this);
         mCameraSwitchBtn.setOnClickListener(this);
         mAlbumBtn.setOnClickListener(this);
+        mSettingBtn.setOnClickListener(this);
         mCameraState = new SimplePhotoTake(CameraActivity.this);
     }
 
@@ -280,11 +284,13 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
                         rotation);
                 break;
             case R.id.btn_album:
-                Intent intent = new Intent(this, AlbumActivity.class);
-                startActivity(intent);
+                startActivity(AlbumActivity.getCallingIntent(this));
                 break;
             case R.id.iv_back:
                 backToFastSettingFragment(getFragmentManager());
+                break;
+            case R.id.iv_setting:
+                startActivity(SettingActivity.getCallingIntent(this));
                 break;
         }
     }

@@ -22,6 +22,7 @@
             <enum name="gone" value="1"/>
             <enum name="invisible" value="2"/>
         </attr>
+        <attr name="item_text_size" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="FastSettingRadioItemView">

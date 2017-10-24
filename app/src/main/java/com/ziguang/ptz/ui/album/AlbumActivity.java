@@ -1,5 +1,7 @@
 package com.ziguang.ptz.ui.album;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +35,10 @@ public class AlbumActivity extends FullScreenActivity {
     private SlidingTabLayout mTabLayout;
 
     private String[] mTabTitles;
+
+    public static Intent getCallingIntent(Context context) {
+        return new Intent(context, AlbumActivity.class);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
