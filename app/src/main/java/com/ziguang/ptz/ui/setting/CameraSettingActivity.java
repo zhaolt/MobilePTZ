@@ -28,6 +28,6 @@ public class CameraSettingActivity extends FullScreenActivity {
         mTitleBar = (TitleBar) findViewById(R.id.tool_bar);
         mTitleBar.setActionMode(TitleBar.DISPLAY_STYLE_ACTION_TEXT_WITH_BACK_TEXT);
         mTitleBar.setActionText("完成");
-        
+
     }
 }
