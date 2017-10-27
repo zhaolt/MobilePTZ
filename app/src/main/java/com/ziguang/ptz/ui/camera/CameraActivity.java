@@ -477,7 +477,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private Runnable mDurationTask = new Runnable() {
         @Override
         public void run() {
-            
+
         }
     };
 
