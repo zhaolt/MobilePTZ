@@ -27,4 +27,8 @@ public interface CameraView {
     void startRecording();
 
     void stopRecording();
+
+    void showVolumeIcon();
+
+    void hideVolumeIcon();
 }

@@ -50,7 +50,8 @@ public class SettingActivity extends FullScreenActivity {
         mPtzSettingItem.setItemClickListener(new IconWithArrowsItemView.OnItemClickListener() {
             @Override
             public void onItemClick() {
-
+                Intent intent = PtzSettingActivity.getCallingIntent(SettingActivity.this);
+                startActivity(intent);
             }
         });
         mCommonSettingItem.setItemClickListener(new IconWithArrowsItemView.OnItemClickListener() {

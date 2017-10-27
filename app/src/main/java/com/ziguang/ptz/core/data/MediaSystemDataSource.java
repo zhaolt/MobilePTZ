@@ -6,10 +6,10 @@ import android.database.CursorJoiner;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.ziguang.ptz.App;
 import com.ziguang.ptz.utils.FileUtils;
+import com.ziguang.ptz.utils.LogUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -105,7 +105,7 @@ public class MediaSystemDataSource implements MediaDataSource {
                     media.setDate(dateAdded);
                     media.setLatitude(latitude);
                     media.setLongitude(longitude);
-                    media.setMediaType(Media.TYPE_VIDEO);
+                    media.setMediaType(Media.TYPE_IMAGE);
                     mediaList.add(media);
                 }
                 return mediaList;
@@ -141,8 +141,8 @@ public class MediaSystemDataSource implements MediaDataSource {
                 Context context = App.INSTANCE;
                 Cursor cursor = null;
                 try {
-                    cursor = MediaStore.Images.Media.query(context.getContentResolver(),
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, videoProjection);
+                    cursor = MediaStore.Video.query(context.getContentResolver(),
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoProjection);
                     if (!subscriber.isUnsubscribed() && cursor != null) {
                         subscriber.onNext(cursor);
                     }
@@ -327,9 +327,9 @@ public class MediaSystemDataSource implements MediaDataSource {
                             if (ignoreSpecificTypeFile(path)) {
                                 continue;
                             }
-                            Log.w(TAG, "path: " + path);
+                            LogUtils.w(TAG, "path: " + path);
                             parentPath = getParentDir(path);
-                            Log.w(TAG, "parentPath: " + parentPath);
+                            LogUtils.w(TAG, "parentPath: " + parentPath);
                             if (parentPath == null || !parentPath.equals(FileUtils.VIDEO_DIR_PATH)) {
                                 continue;
                             }

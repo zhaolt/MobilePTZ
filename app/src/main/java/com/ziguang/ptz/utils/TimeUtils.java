@@ -19,6 +19,21 @@ public class TimeUtils {
     private static StringBuilder sFormatBuilder = new StringBuilder();
     private static Formatter sFormatter = new Formatter(sFormatBuilder, Locale.getDefault());
 
+    public static String getDurationSecond(int timeS) {
+        if (timeS < 0) {
+            timeS = 0;
+        }
+        int seconds = timeS % 60;
+        int minutes = (timeS / 60) % 60;
+        int hours = timeS / 3600;
+        sFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return sFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return sFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
+
     public static String getDuration(int timeMs) {
         if (timeMs < 0) {
             timeMs = 0;

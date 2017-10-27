@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -80,6 +81,12 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     private CameraState mCameraState;
 
+    private String mVideoPath;
+
+    private Handler mHandler;
+
+    private ImageView mVolumeIcon;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +155,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mCameraModeSwitch = (LengthwaysSwitch) findViewById(R.id.mode_switch);
         mTakeModeMenuView = findViewById(R.id.take_mode_menu);
         mSettingBtn = (ImageButton) findViewById(R.id.iv_setting);
+        mVolumeIcon = (ImageView) findViewById(R.id.iv_volume);
         mCameraModeSwitch.setOnSwitchChangeListener(new LengthwaysSwitch.OnSwitchChangeListener() {
             @Override
             public void onChanged(boolean isOpen) {
@@ -196,6 +204,7 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
         mAlbumBtn.setOnClickListener(this);
         mSettingBtn.setOnClickListener(this);
         mCameraState = new SimplePhotoTake(CameraActivity.this);
+        mHandler = new Handler(getMainLooper());
     }
 
     private void onCameraDisable() {
@@ -435,11 +444,69 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
     @Override
     public void startRecording() {
-        mPreviewDisplayFragment.startRecordingVideo();
+        mVideoPath = mPreviewDisplayFragment.startRecordingVideo();
+        runOnUiThread(mPollTask);
     }
 
     @Override
     public void stopRecording() {
-        mPreviewDisplayFragment.stopRecordingVideo();
+        mPreviewDisplayFragment.stopRecordingVideo(mVideoPath);
+        mHandler.removeCallbacks(mPollTask);
+    }
+
+    @Override
+    public void showVolumeIcon() {
+        mVolumeIcon.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideVolumeIcon() {
+        mVolumeIcon.setVisibility(View.GONE);
+    }
+
+    private Runnable mPollTask = new Runnable() {
+        @Override
+        public void run() {
+            int volume = CameraHelper.getInstance().getVolume();
+            Log.i(TAG, "volume : " + volume);
+            updateVolume(volume);
+            mHandler.postDelayed(mPollTask, 100);
+        }
+    };
+
+    private Runnable mDurationTask = new Runnable() {
+        @Override
+        public void run() {
+            
+        }
+    };
+
+    private void updateVolume(int volume) {
+        switch (volume) {
+            case 0:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_0);
+                break;
+            case 1:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_1);
+                break;
+            case 2:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_2);
+                break;
+            case 3:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_3);
+                break;
+            case 4:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_4);
+                break;
+            case 5:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_5);
+                break;
+            case 6:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_6);
+                break;
+            default:
+                mVolumeIcon.setImageResource(R.mipmap.icon_volume_7);
+                break;
+        }
     }
 }

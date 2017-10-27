@@ -15,7 +15,14 @@ public class MediaRecorderWrapper {
 
     private MediaRecorder mMediaRecorder;
 
+    private boolean isRecording = false;
+
     private static boolean isLollipop = false;
+
+    public static final String VIDEO_RESOLUTION = "video_size";
+    public static final int VIDEO_RESOLUTION_1080P = 1080;
+    public static final int VIDEO_RESOLUTION_720P = 720;
+    public static final int VIDEO_RESOLUTION_480P = 480;
 
     private MediaRecorderWrapper(MediaRecorder mediaRecorder) {
         mMediaRecorder = mediaRecorder;
@@ -63,9 +70,21 @@ public class MediaRecorderWrapper {
         try {
             mMediaRecorder.prepare();
             mMediaRecorder.start();
+            isRecording = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public int getVolumeLevel() {
+        int volume = 0;
+        if (mMediaRecorder != null && isRecording) {
+            volume = mMediaRecorder.getMaxAmplitude() / 650;
+            if (volume != 0)
+                volume = (int) (10 * Math.log10(volume)) / 2;
+            Log.d("volume", volume + "");
+        }
+        return volume;
     }
 
     public void releaseRecorder() {
@@ -77,8 +96,15 @@ public class MediaRecorderWrapper {
 
     public void stopRecordingVideo() {
         checkRecorderNotNull();
-        mMediaRecorder.stop();
-        mMediaRecorder.reset();
+        try {
+            mMediaRecorder.stop();
+            mMediaRecorder.reset();
+            isRecording = false;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            stopRecordingVideo();
+        }
+
     }
 
 }

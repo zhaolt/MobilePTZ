@@ -44,6 +44,7 @@ public class SimpleVideoTake extends CameraState {
         super.onIdle();
         mTakeState = TAKE_STATE_IDLE;
         cameraView.get().updateCameraShutter(R.mipmap.video_shutter_normal);
+        cameraView.get().hideVolumeIcon();
     }
 
     @Override
@@ -51,5 +52,6 @@ public class SimpleVideoTake extends CameraState {
         super.onWorking();
         mTakeState = TAKE_STATE_WORKING;
         cameraView.get().updateCameraShutter(R.drawable.video_shutter_recording_selector);
+        cameraView.get().showVolumeIcon();
     }
 }

@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
@@ -16,6 +15,7 @@ import com.ziguang.ptz.core.media.MediaRecorderWrapper;
 import com.ziguang.ptz.rx.NCSubscriber;
 import com.ziguang.ptz.utils.FileUtils;
 import com.ziguang.ptz.utils.ImageUtils;
+import com.ziguang.ptz.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +44,8 @@ public class CameraHelper {
     private static final int REAR_CAMERA = 0;
 
     private static final int FRONT_CAMERA = 1;
+
+    public static final int M_BIT_UNIT = 1024 * 1024 * 8;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -203,10 +205,10 @@ public class CameraHelper {
 //        Camera.Size pictureSize = Collections.max(mParameters.getSupportedPictureSizes(), new CameraSizeComparator());
         Camera.Size pictureSize = mParameters.getSupportedPictureSizes().get(0);
         mParameters.setPictureSize(pictureSize.width, pictureSize.height);
-        Log.i(TAG, "choose picture size width: " + pictureSize.width + ", height: " + pictureSize.height);
+        LogUtils.i(TAG, "choose picture size width: " + pictureSize.width + ", height: " + pictureSize.height);
         Camera.Size previewSize = Collections.max(mParameters.getSupportedPreviewSizes(), new CameraSizeComparator());
         mParameters.setPreviewSize(previewSize.width, previewSize.height);
-        Log.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
+        LogUtils.i(TAG, "choose preview size width: " + previewSize.width + ", height: " + previewSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
@@ -228,7 +230,7 @@ public class CameraHelper {
 
     private void setUpVideoCamera(SurfaceTexture surfaceTexture, int rotation) {
         mVideoSize = Collections.max(mParameters.getSupportedVideoSizes(), new CompareSizesByArea());
-        Log.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
+        LogUtils.i(TAG, "choose video size width: " + mVideoSize.width + ", height: " + mVideoSize.height);
         if (!isFrontCamera()) {
             setUpFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
             setUpSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
@@ -290,21 +292,35 @@ public class CameraHelper {
      * create MediaRecorderWrapper
      * recording video
      */
-    public void startRecordingVideo(SurfaceTexture surfaceTexture) {
+    public String startRecordingVideo(SurfaceTexture surfaceTexture) {
         Surface surface = new Surface(surfaceTexture);
         mCamera.unlock();
         mMediaRecorderWrapper = MediaRecorderWrapper.setUpMediaRecord(mCamera,
-                mVideoSize.width, mVideoSize.height, 30, (int) (2.1 * 1024 * 1024 * 8),
+                mVideoSize.width, mVideoSize.height, 30, 2 * M_BIT_UNIT,
                 ORIENTATIONS.get(mRotation), surface);
-        mMediaRecorderWrapper.startRecordingVideo(FileUtils.createMP4().getAbsolutePath());
+        String filePath = FileUtils.createMP4().getAbsolutePath();
+        mMediaRecorderWrapper.startRecordingVideo(filePath);
+        return filePath;
     }
 
-    public void stopRecordingVideo() {
+    public int getVolume() {
+        if (null != mMediaRecorderWrapper) {
+            return mMediaRecorderWrapper.getVolumeLevel();
+        }
+        return 0;
+    }
+
+    public void stopRecordingVideo(String filePath) {
         if (null != mMediaRecorderWrapper) {
             mMediaRecorderWrapper.stopRecordingVideo();
         }
         mCamera.startPreview();
         mMediaRecorderWrapper = null;
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return;
+        }
+        ImageUtils.addToMediaStore(App.INSTANCE, file);
     }
 
     public Observable<Void> chooseVideoMode(SurfaceTexture surfaceTexture,
@@ -326,7 +342,7 @@ public class CameraHelper {
         List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
         for (int i = 0; i < previewSizes.size(); i++) {
             Camera.Size size = previewSizes.get(i);
-            Log.i(TAG, "previewSizes:width = " + size.width + " height = " + size.height);
+            LogUtils.i(TAG, "previewSizes:width = " + size.width + " height = " + size.height);
         }
     }
 
@@ -334,7 +350,7 @@ public class CameraHelper {
         List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
         for (int i = 0; i < pictureSizes.size(); i++) {
             Camera.Size size = pictureSizes.get(i);
-            Log.i(TAG, "pictureSizes:width = " + size.width
+            LogUtils.i(TAG, "pictureSizes:width = " + size.width
                     + " height = " + size.height);
         }
     }
@@ -343,35 +359,35 @@ public class CameraHelper {
         List<Camera.Size> videoSize = params.getSupportedVideoSizes();
         for (int i = 0; i < videoSize.size(); i++) {
             Camera.Size size = videoSize.get(i);
-            Log.i(TAG, "videoSize:width = " + size.width + " height = " + size.height);
+            LogUtils.i(TAG, "videoSize:width = " + size.width + " height = " + size.height);
         }
     }
 
     private void printSupportFocusMode(Camera.Parameters params) {
         List<String> focusModes = params.getSupportedFocusModes();
         for (String mode : focusModes) {
-            Log.i(TAG, "focusModes--" + mode);
+            LogUtils.i(TAG, "focusModes--" + mode);
         }
     }
 
     private void printSupportWhiteBalance(Camera.Parameters params) {
         List<String> whiteBalances = params.getSupportedWhiteBalance();
         for (String whiteBalance : whiteBalances) {
-            Log.i(TAG, "whiteBalance--" + whiteBalance);
+            LogUtils.i(TAG, "whiteBalance--" + whiteBalance);
         }
     }
 
     private void printSupportSceneModes(Camera.Parameters params) {
         List<String> sceneModes = params.getSupportedSceneModes();
         for (String sceneMode : sceneModes) {
-            Log.i(TAG, "sceneMode--" + sceneMode);
+            LogUtils.i(TAG, "sceneMode--" + sceneMode);
         }
     }
 
     private void printSupportAntibanding(Camera.Parameters params) {
         List<String> antibandings = params.getSupportedAntibanding();
         for (String antibanding : antibandings) {
-            Log.i(TAG, "antibanding--" + antibanding);
+            LogUtils.i(TAG, "antibanding--" + antibanding);
         }
     }
 
