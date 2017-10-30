@@ -33,6 +33,7 @@ import com.ziguang.ptz.ui.setting.SettingActivity;
 import com.ziguang.ptz.utils.ActivityUtils;
 import com.ziguang.ptz.utils.PermissionUtils;
 import com.ziguang.ptz.utils.SharedPrefUtils;
+import com.ziguang.ptz.utils.StorageUtils;
 import com.ziguang.ptz.utils.UIUtils;
 import com.ziguang.ptz.widget.Grid;
 import com.ziguang.ptz.widget.LengthwaysSwitch;
@@ -86,6 +87,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     private Handler mHandler;
 
     private ImageView mVolumeIcon;
+
+    private long mSurplusTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -446,6 +449,8 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
     public void startRecording() {
         mVideoPath = mPreviewDisplayFragment.startRecordingVideo();
         runOnUiThread(mPollTask);
+        // TODO: 2017/10/30 开计时器计算拍摄时间和剩余录制时间
+
     }
 
     @Override
@@ -480,6 +485,13 @@ public class CameraActivity extends FullScreenActivity implements View.OnClickLi
 
         }
     };
+
+    /**
+     * 计算剩余拍摄时间
+     */
+    private void calculateSurplusTime() {
+        StorageUtils.getSurplusTime();
+    }
 
     private void updateVolume(int volume) {
         switch (volume) {

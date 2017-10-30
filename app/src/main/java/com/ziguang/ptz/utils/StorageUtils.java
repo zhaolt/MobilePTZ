@@ -26,9 +26,11 @@ public class StorageUtils {
         return availableSize;
     }
 
-    public static String getAvailableTime() {
+    public static String getSurplusTime() {
         return TimeUtils.getDurationSecond((int) (readSDCard() * 1024 * 1024 /
                 (Float.valueOf((String) SharedPrefUtils.getParam(MediaRecorderWrapper.VIDEO_RESOLUTION, "2"))
                         * 1024 * 1024)));
     }
+
+//    public static int getSurplusTime()
 }
