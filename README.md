@@ -7,7 +7,7 @@
 	* [1.4CameraState]
 * [2.DomainLayer](#DomainLayer)
 	* [2.1UseCase]
-* [3.DataLayer](#DataLayer)
+* [3.DataLayer](#DataLaye)
 
 # PresentationLayer
 * CaptureActivity
