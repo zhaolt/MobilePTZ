@@ -14,10 +14,13 @@
 
 <b id="CaptureActivity"/>
 * CaptureActivity
+
 <b id="CaptureFragment"/>
 * CaptureFragment
+
 <b id="CapturePresenter"/>
 * CapturePresenter
+
 <b id="CameraState"/>
 * CameraState
 	* state
@@ -30,8 +33,10 @@
 		- void onIdle()
 		- void inWork()
 		
+
 <b id="DomainLayer"/>	
 # DomainLayer
+
 <b id="UseCase"/>
 * UseCase
 	* InitEngine
@@ -40,5 +45,7 @@
 	* StopRecording
 	* CancelRecording
 	* ChooseFilter
+	
+
 <b id="DataLayer"/>
 # DataLayer
