@@ -9,12 +9,16 @@
 	* [2.1UseCase](#UseCase)
 * [3.DataLayer](#DataLayer)
 
-<b id="PresentationLayer"></b>
+<b id="PresentationLayer"/>
 # PresentationLayer
 
+<b id="CaptureActivity"/>
 * CaptureActivity
+<b id="CaptureFragment"/>
 * CaptureFragment
+<b id="CapturePresenter"/>
 * CapturePresenter
+<b id="CameraState"/>
 * CameraState
 	* state
 		- UNKNOWN
@@ -26,7 +30,9 @@
 		- void onIdle()
 		- void inWork()
 		
+<b id="DomainLayer"/>	
 # DomainLayer
+<b id="UseCase"/>
 * UseCase
 	* InitEngine
 	* SwitchCamera
@@ -34,5 +40,5 @@
 	* StopRecording
 	* CancelRecording
 	* ChooseFilter
-
+<b id="DataLayer"/>
 # DataLayer
